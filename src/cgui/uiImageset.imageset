@@ -1,0 +1,4 @@
+<?xml version="1.0" ?>
+<Imageset Name="TaharezLook" Imagefile="TaharezLook.tga" NativeHorzRes="800" NativeVertRes="600" AutoScaled="true">
+	<Image Name="MouseArrow" XPos="138" YPos="127" Width="31" Height="25" XOffset="0" YOffset="0" />
+</Imageset>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GUILayout version="4" >
+    <Window name="root" type="DefaultWindow">
+        <Property name="Area" value="{{0,0},{0,0},{1,0},{1,0}}" />
+        <Property name="MaxSize" value="{{1,0},{1,0}}" />
+        <Window name="mainMenu" type="TaharezLook/FrameWindow">
+            <Property name="Area" value="{{0,0},{0,0},{0,362},{0,492}}" />
+            <Property name="DragMovingEnabled" value="false" />
+            <Property name="VerticalAlignment" value="Centre" />
+            <Property name="CloseButtonEnabled" value="false" />
+            <Property name="HorizontalAlignment" value="Centre" />
+            <Property name="AutoRenderingSurface" value="true" />
+            <Window name="singlePlayerButton" type="TaharezLook/Button">
+                <Property name="Area" value="{{0,0},{0,98},{0,273},{0,148}}" />
+                <Property name="Text" value="Single Player" />
+                <Property name="HorizontalAlignment" value="Centre" />
+            </Window>
+            <Window name="multiplayerButton" type="TaharezLook/Button">
+                <Property name="Area" value="{{0,0},{0,170},{0,273},{0,220}}" />
+                <Property name="Text" value="Multiplayer" />
+                <Property name="HorizontalAlignment" value="Centre" />
+            </Window>
+            <Window name="infoBox" type="TaharezLook/MultiLineEditbox">
+                <Property name="Area" value="{{0,0},{0,242},{0,279},{0,420}}" />
+                <Property name="Text"></Property>
+                <Property name="ReadOnly" value="true" />
+                <Property name="HorizontalAlignment" value="Centre" />
+            </Window>
+        </Window>
+        <Window name="HUD" type="TaharezLook/FrameWindow">
+            <Property name="Area" value="{{0,0},{0,0},{0,300},{0,130}}" />
+            <Property name="DragMovingEnabled" value="false" />
+            <Property name="VerticalAlignment" value="Top" />
+            <Property name="CloseButtonEnabled" value="false" />
+            <Property name="HorizontalAlignment" value="Left" />
+            <Property name="AutoRenderingSurface" value="true" />
+            <Property name="Visible" value="false" />
+            <Window name="PlayerScore" type="TaharezLook/StaticText">
+                <Property name="Area" value="{{0,0},{0,0},{0,273},{0,60}}" />
+                <Property name="Text" value="Score: 0" />
+                <Property name="VerticalAlignment" value="Top" />
+                <Property name="HorizontalAlignment" value="Centre" />
+            </Window>
+        </Window>
+    </Window>
+</GUILayout>
