@@ -26,3 +26,30 @@
 *.exe
 *.out
 *.app
+
+# Log files
+*.log
+
+# Ogre-specific stuff
+src/a
+src/.deps/
+src/Makefile
+src/Makefile.in
+src/aclocal.m4
+src/autom4te.cache/
+src/compile
+src/config.guess
+src/config.h
+src/config.h.in
+src/config.log
+src/config.status
+src/config.sub
+src/configure
+src/depcomp
+src/install-sh
+src/libtool
+src/ltmain.sh
+src/m4/
+src/missing
+src/ogre.cfg
+src/stamp-h1
