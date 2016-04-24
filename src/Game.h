@@ -28,6 +28,7 @@ http://www.ogre3d.org/wiki/
 #include "BaseApplication.h"
 #include "Physics.h"
 #include "Sound.h"
+#include "Player.h"
 
 #include "NetManager.h"
 
@@ -66,7 +67,7 @@ protected:
     // GameObject*         mGround;
     // Paddle*             mPaddle;
     // Table*              mTable;
-    // Ball*               mBall;
+    Player*                mPlayer;
 
     Sound*              mSound;
     NetManager*         mNetMgr;
