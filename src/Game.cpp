@@ -26,7 +26,7 @@ http://www.ogre3d.org/wiki/
 #include "GameObject.h"
 #include "Sound.h"
 
-struct position {
+struct Position {
     Ogre::Real bx;
     Ogre::Real by;
     Ogre::Real bz;
@@ -324,19 +324,19 @@ bool Game::frameRenderingQueued(const Ogre::FrameEvent& evt) {
     //                 }
     //                 else{
     //                     // printf("%s\n", "ball moving");
-    //                     struct position *p = (struct position *)mNetMgr->tcpClientData[0]->output;
+    //                     struct Position *p = (struct Position *)mNetMgr->tcpClientData[0]->output;
     //                     mBall->setPosition(p->bx, p->by, -400);
     //                     mBall->updateTransform(mBall->getPosition(), mBall->getOrientation());
     //                 }
-    //                 struct position p;
+    //                 struct Position p;
     //                 p.px = mPaddle->getPosition().x;
     //                 p.py = mPaddle->getPosition().y;
     //                 p.pz = mPaddle->getPosition().z;
 
-    //                 mNetMgr->messageClient(PROTOCOL_TCP, 0, (char *)&p, sizeof(position) & INT_MAX);
+    //                 mNetMgr->messageClient(PROTOCOL_TCP, 0, (char *)&p, sizeof(Position) & INT_MAX);
     //             }
     //             if(isBallLaunched){
-    //                 struct position p;
+    //                 struct Position p;
     //                 p.bx = mBall->getPosition().x;
     //                 p.by = mBall->getPosition().y;
     //                 p.bz = mBall->getPosition().z;
@@ -345,7 +345,7 @@ bool Game::frameRenderingQueued(const Ogre::FrameEvent& evt) {
     //                 p.pz = mPaddle->getPosition().z;
     //                 p.score = cscore;
 
-    //                 mNetMgr->messageClient(PROTOCOL_TCP, 0, (char *)&p, sizeof(position) & INT_MAX);
+    //                 mNetMgr->messageClient(PROTOCOL_TCP, 0, (char *)&p, sizeof(Position) & INT_MAX);
     //             }
     //         }
     //         else{   // client
@@ -357,14 +357,14 @@ bool Game::frameRenderingQueued(const Ogre::FrameEvent& evt) {
     //                 }
     //                 if(isBallLaunched){
                        
-    //                         // struct position p;
+    //                         // struct Position p;
     //                         // p.bx = mBall->getPosition().x;
     //                         // p.by = mBall->getPosition().y+10;
     //                         // p.bz = -400;
                 
-    //                         // mNetMgr->messageServer(PROTOCOL_TCP, (char *)&p, sizeof(position) & INT_MAX);
+    //                         // mNetMgr->messageServer(PROTOCOL_TCP, (char *)&p, sizeof(Position) & INT_MAX);
                    
-    //                     struct position *p = (struct position *)mNetMgr->tcpServerData.output;
+    //                     struct Position *p = (struct Position *)mNetMgr->tcpServerData.output;
 
     //                     mBall->setPosition(p->bx, p->by, p->bz);
     //                     mPaddle->setPosition(p->px, p->py, p->pz);
@@ -372,7 +372,7 @@ bool Game::frameRenderingQueued(const Ogre::FrameEvent& evt) {
                         
     //                 }
     //                 else{
-    //                     struct position *p = (struct position *)mNetMgr->tcpServerData.output;
+    //                     struct Position *p = (struct Position *)mNetMgr->tcpServerData.output;
     //                         mPaddle->setPosition(p->px, p->py, p->pz);
     //                 }
     //             }
@@ -488,12 +488,12 @@ bool Game::mouseMoved(const OIS::MouseEvent &arg)
     //         if(!isBallLaunched){
     //             mBall->translate(-dragSensitivity*arg.state.X.rel, dragSensitivity*-arg.state.Y.rel, 0);
     //             mBall->setPosition(mBall->getPosition().x, mBall->getPosition().y, -400);
-    //             struct position p;
+    //             struct Position p;
     //             p.bx = mBall->getPosition().x;
     //             p.by = mBall->getPosition().y;
     //             p.bz = mBall->getPosition().z;
     
-    //             mNetMgr->messageServer(PROTOCOL_TCP, (char *)&p, sizeof(position) & INT_MAX);
+    //             mNetMgr->messageServer(PROTOCOL_TCP, (char *)&p, sizeof(Position) & INT_MAX);
     //         }
     //     }
     
