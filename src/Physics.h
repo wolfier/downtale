@@ -27,7 +27,7 @@ protected:
     bool debug;
     
 public:
-    Physics(Ogre::SceneManager* mgr);
+    Physics(Ogre::SceneManager* mgr, bool _debug);
     virtual ~Physics();
 
     std::list<PhysicsObject*> * getObjList ();

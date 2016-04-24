@@ -1002,7 +1002,7 @@ a-PhysicsObject.o: PhysicsObject.cpp /usr/include/stdc-predef.h Physics.h \
  /usr/include/bullet/BulletDynamics/Dynamics/btActionInterface.h \
  /usr/include/bullet/BulletDynamics/Dynamics/btRigidBody.h \
  BulletContactCallback.h MotionState.h GameObject.h EntityObject.h \
- Event.h DebugDraw.hpp /lusr/opt/ogre-1.9/include/OGRE/Ogre.h \
+ DebugDraw.hpp /lusr/opt/ogre-1.9/include/OGRE/Ogre.h \
  DynamicLineDrawer.hpp
 
 /usr/include/stdc-predef.h:
@@ -3204,8 +3204,6 @@ MotionState.h:
 GameObject.h:
 
 EntityObject.h:
-
-Event.h:
 
 DebugDraw.hpp:
 

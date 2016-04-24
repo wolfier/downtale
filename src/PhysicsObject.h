@@ -36,8 +36,8 @@ public:
     void setFriction(btScalar newFriction);
     void setRestitution(btScalar newRestitution);
 
-    void reset();
-    void readd();
+    void remove();
+    void reinit();
 
 protected:
     Ogre::SceneNode* node;

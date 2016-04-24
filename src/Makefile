@@ -100,12 +100,11 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
-am_a_OBJECTS = a-BaseApplication.$(OBJEXT) a-PongPing.$(OBJEXT) \
+am_a_OBJECTS = a-BaseApplication.$(OBJEXT) a-Game.$(OBJEXT) \
 	a-Physics.$(OBJEXT) a-Sound.$(OBJEXT) a-GameObject.$(OBJEXT) \
 	a-EntityObject.$(OBJEXT) a-PhysicsObject.$(OBJEXT) \
-	a-Paddle.$(OBJEXT) a-Table.$(OBJEXT) a-Ball.$(OBJEXT) \
-	a-Server.$(OBJEXT) a-NetManager.$(OBJEXT) \
-	a-DebugDraw.$(OBJEXT) a-DynamicLineDrawer.$(OBJEXT)
+	a-NetManager.$(OBJEXT) a-DebugDraw.$(OBJEXT) \
+	a-DynamicLineDrawer.$(OBJEXT)
 a_OBJECTS = $(am_a_OBJECTS)
 am__DEPENDENCIES_1 =
 a_DEPENDENCIES = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
@@ -333,9 +332,9 @@ target_alias =
 top_build_prefix = 
 top_builddir = .
 top_srcdir = .
-noinst_HEADERS = BaseApplication.h PongPing.h Physics.h Sound.h GameObject.h EntityObject.h PhysicsObject.h Event.h Paddle.h Table.h Ball.h MotionState.h Sound.h BulletContactCallback.h Server.h NetManager.h DebugDraw.hpp DynamicLineDrawer.hpp
+noinst_HEADERS = BaseApplication.h Game.h Physics.h Sound.h GameObject.h EntityObject.h PhysicsObject.h MotionState.h Sound.h BulletContactCallback.h NetManager.h DebugDraw.hpp DynamicLineDrawer.hpp
 a_CPPFLAGS = -I$(top_srcdir) -std=c++11 -I/usr/include/SDL
-a_SOURCES = BaseApplication.cpp PongPing.cpp Physics.cpp Sound.cpp GameObject.cpp EntityObject.cpp PhysicsObject.cpp Paddle.cpp Table.cpp Ball.cpp Server.cpp NetManager.cpp DebugDraw.cpp DynamicLineDrawer.cpp
+a_SOURCES = BaseApplication.cpp Game.cpp Physics.cpp Sound.cpp GameObject.cpp EntityObject.cpp PhysicsObject.cpp NetManager.cpp DebugDraw.cpp DynamicLineDrawer.cpp
 a_CXXFLAGS = $(OGRE_CFLAGS) $(OIS_CFLAGS) $(bullet_CFLAGS) $(CEGUI_CFLAGS)
 a_LDADD = $(OGRE_LIBS) $(OIS_LIBS) $(bullet_LIBS) $(CEGUI_LIBS) $(CEGUI_OGRE_LIBS)
 a_LDFLAGS = -lOgreOverlay -lboost_system -lSDL -lSDL_mixer -lSDL_net \
@@ -456,20 +455,16 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-include ./$(DEPDIR)/a-Ball.Po
 include ./$(DEPDIR)/a-BaseApplication.Po
 include ./$(DEPDIR)/a-DebugDraw.Po
 include ./$(DEPDIR)/a-DynamicLineDrawer.Po
 include ./$(DEPDIR)/a-EntityObject.Po
+include ./$(DEPDIR)/a-Game.Po
 include ./$(DEPDIR)/a-GameObject.Po
 include ./$(DEPDIR)/a-NetManager.Po
-include ./$(DEPDIR)/a-Paddle.Po
 include ./$(DEPDIR)/a-Physics.Po
 include ./$(DEPDIR)/a-PhysicsObject.Po
-include ./$(DEPDIR)/a-PongPing.Po
-include ./$(DEPDIR)/a-Server.Po
 include ./$(DEPDIR)/a-Sound.Po
-include ./$(DEPDIR)/a-Table.Po
 
 .cpp.o:
 	$(AM_V_CXX)$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -506,19 +501,19 @@ a-BaseApplication.obj: BaseApplication.cpp
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
 #	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(a_CPPFLAGS) $(CPPFLAGS) $(a_CXXFLAGS) $(CXXFLAGS) -c -o a-BaseApplication.obj `if test -f 'BaseApplication.cpp'; then $(CYGPATH_W) 'BaseApplication.cpp'; else $(CYGPATH_W) '$(srcdir)/BaseApplication.cpp'; fi`
 
-a-PongPing.o: PongPing.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(a_CPPFLAGS) $(CPPFLAGS) $(a_CXXFLAGS) $(CXXFLAGS) -MT a-PongPing.o -MD -MP -MF $(DEPDIR)/a-PongPing.Tpo -c -o a-PongPing.o `test -f 'PongPing.cpp' || echo '$(srcdir)/'`PongPing.cpp
-	$(AM_V_at)$(am__mv) $(DEPDIR)/a-PongPing.Tpo $(DEPDIR)/a-PongPing.Po
-#	$(AM_V_CXX)source='PongPing.cpp' object='a-PongPing.o' libtool=no \
+a-Game.o: Game.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(a_CPPFLAGS) $(CPPFLAGS) $(a_CXXFLAGS) $(CXXFLAGS) -MT a-Game.o -MD -MP -MF $(DEPDIR)/a-Game.Tpo -c -o a-Game.o `test -f 'Game.cpp' || echo '$(srcdir)/'`Game.cpp
+	$(AM_V_at)$(am__mv) $(DEPDIR)/a-Game.Tpo $(DEPDIR)/a-Game.Po
+#	$(AM_V_CXX)source='Game.cpp' object='a-Game.o' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(a_CPPFLAGS) $(CPPFLAGS) $(a_CXXFLAGS) $(CXXFLAGS) -c -o a-PongPing.o `test -f 'PongPing.cpp' || echo '$(srcdir)/'`PongPing.cpp
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(a_CPPFLAGS) $(CPPFLAGS) $(a_CXXFLAGS) $(CXXFLAGS) -c -o a-Game.o `test -f 'Game.cpp' || echo '$(srcdir)/'`Game.cpp
 
-a-PongPing.obj: PongPing.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(a_CPPFLAGS) $(CPPFLAGS) $(a_CXXFLAGS) $(CXXFLAGS) -MT a-PongPing.obj -MD -MP -MF $(DEPDIR)/a-PongPing.Tpo -c -o a-PongPing.obj `if test -f 'PongPing.cpp'; then $(CYGPATH_W) 'PongPing.cpp'; else $(CYGPATH_W) '$(srcdir)/PongPing.cpp'; fi`
-	$(AM_V_at)$(am__mv) $(DEPDIR)/a-PongPing.Tpo $(DEPDIR)/a-PongPing.Po
-#	$(AM_V_CXX)source='PongPing.cpp' object='a-PongPing.obj' libtool=no \
+a-Game.obj: Game.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(a_CPPFLAGS) $(CPPFLAGS) $(a_CXXFLAGS) $(CXXFLAGS) -MT a-Game.obj -MD -MP -MF $(DEPDIR)/a-Game.Tpo -c -o a-Game.obj `if test -f 'Game.cpp'; then $(CYGPATH_W) 'Game.cpp'; else $(CYGPATH_W) '$(srcdir)/Game.cpp'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/a-Game.Tpo $(DEPDIR)/a-Game.Po
+#	$(AM_V_CXX)source='Game.cpp' object='a-Game.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(a_CPPFLAGS) $(CPPFLAGS) $(a_CXXFLAGS) $(CXXFLAGS) -c -o a-PongPing.obj `if test -f 'PongPing.cpp'; then $(CYGPATH_W) 'PongPing.cpp'; else $(CYGPATH_W) '$(srcdir)/PongPing.cpp'; fi`
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(a_CPPFLAGS) $(CPPFLAGS) $(a_CXXFLAGS) $(CXXFLAGS) -c -o a-Game.obj `if test -f 'Game.cpp'; then $(CYGPATH_W) 'Game.cpp'; else $(CYGPATH_W) '$(srcdir)/Game.cpp'; fi`
 
 a-Physics.o: Physics.cpp
 	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(a_CPPFLAGS) $(CPPFLAGS) $(a_CXXFLAGS) $(CXXFLAGS) -MT a-Physics.o -MD -MP -MF $(DEPDIR)/a-Physics.Tpo -c -o a-Physics.o `test -f 'Physics.cpp' || echo '$(srcdir)/'`Physics.cpp
@@ -589,62 +584,6 @@ a-PhysicsObject.obj: PhysicsObject.cpp
 #	$(AM_V_CXX)source='PhysicsObject.cpp' object='a-PhysicsObject.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
 #	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(a_CPPFLAGS) $(CPPFLAGS) $(a_CXXFLAGS) $(CXXFLAGS) -c -o a-PhysicsObject.obj `if test -f 'PhysicsObject.cpp'; then $(CYGPATH_W) 'PhysicsObject.cpp'; else $(CYGPATH_W) '$(srcdir)/PhysicsObject.cpp'; fi`
-
-a-Paddle.o: Paddle.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(a_CPPFLAGS) $(CPPFLAGS) $(a_CXXFLAGS) $(CXXFLAGS) -MT a-Paddle.o -MD -MP -MF $(DEPDIR)/a-Paddle.Tpo -c -o a-Paddle.o `test -f 'Paddle.cpp' || echo '$(srcdir)/'`Paddle.cpp
-	$(AM_V_at)$(am__mv) $(DEPDIR)/a-Paddle.Tpo $(DEPDIR)/a-Paddle.Po
-#	$(AM_V_CXX)source='Paddle.cpp' object='a-Paddle.o' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(a_CPPFLAGS) $(CPPFLAGS) $(a_CXXFLAGS) $(CXXFLAGS) -c -o a-Paddle.o `test -f 'Paddle.cpp' || echo '$(srcdir)/'`Paddle.cpp
-
-a-Paddle.obj: Paddle.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(a_CPPFLAGS) $(CPPFLAGS) $(a_CXXFLAGS) $(CXXFLAGS) -MT a-Paddle.obj -MD -MP -MF $(DEPDIR)/a-Paddle.Tpo -c -o a-Paddle.obj `if test -f 'Paddle.cpp'; then $(CYGPATH_W) 'Paddle.cpp'; else $(CYGPATH_W) '$(srcdir)/Paddle.cpp'; fi`
-	$(AM_V_at)$(am__mv) $(DEPDIR)/a-Paddle.Tpo $(DEPDIR)/a-Paddle.Po
-#	$(AM_V_CXX)source='Paddle.cpp' object='a-Paddle.obj' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(a_CPPFLAGS) $(CPPFLAGS) $(a_CXXFLAGS) $(CXXFLAGS) -c -o a-Paddle.obj `if test -f 'Paddle.cpp'; then $(CYGPATH_W) 'Paddle.cpp'; else $(CYGPATH_W) '$(srcdir)/Paddle.cpp'; fi`
-
-a-Table.o: Table.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(a_CPPFLAGS) $(CPPFLAGS) $(a_CXXFLAGS) $(CXXFLAGS) -MT a-Table.o -MD -MP -MF $(DEPDIR)/a-Table.Tpo -c -o a-Table.o `test -f 'Table.cpp' || echo '$(srcdir)/'`Table.cpp
-	$(AM_V_at)$(am__mv) $(DEPDIR)/a-Table.Tpo $(DEPDIR)/a-Table.Po
-#	$(AM_V_CXX)source='Table.cpp' object='a-Table.o' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(a_CPPFLAGS) $(CPPFLAGS) $(a_CXXFLAGS) $(CXXFLAGS) -c -o a-Table.o `test -f 'Table.cpp' || echo '$(srcdir)/'`Table.cpp
-
-a-Table.obj: Table.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(a_CPPFLAGS) $(CPPFLAGS) $(a_CXXFLAGS) $(CXXFLAGS) -MT a-Table.obj -MD -MP -MF $(DEPDIR)/a-Table.Tpo -c -o a-Table.obj `if test -f 'Table.cpp'; then $(CYGPATH_W) 'Table.cpp'; else $(CYGPATH_W) '$(srcdir)/Table.cpp'; fi`
-	$(AM_V_at)$(am__mv) $(DEPDIR)/a-Table.Tpo $(DEPDIR)/a-Table.Po
-#	$(AM_V_CXX)source='Table.cpp' object='a-Table.obj' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(a_CPPFLAGS) $(CPPFLAGS) $(a_CXXFLAGS) $(CXXFLAGS) -c -o a-Table.obj `if test -f 'Table.cpp'; then $(CYGPATH_W) 'Table.cpp'; else $(CYGPATH_W) '$(srcdir)/Table.cpp'; fi`
-
-a-Ball.o: Ball.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(a_CPPFLAGS) $(CPPFLAGS) $(a_CXXFLAGS) $(CXXFLAGS) -MT a-Ball.o -MD -MP -MF $(DEPDIR)/a-Ball.Tpo -c -o a-Ball.o `test -f 'Ball.cpp' || echo '$(srcdir)/'`Ball.cpp
-	$(AM_V_at)$(am__mv) $(DEPDIR)/a-Ball.Tpo $(DEPDIR)/a-Ball.Po
-#	$(AM_V_CXX)source='Ball.cpp' object='a-Ball.o' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(a_CPPFLAGS) $(CPPFLAGS) $(a_CXXFLAGS) $(CXXFLAGS) -c -o a-Ball.o `test -f 'Ball.cpp' || echo '$(srcdir)/'`Ball.cpp
-
-a-Ball.obj: Ball.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(a_CPPFLAGS) $(CPPFLAGS) $(a_CXXFLAGS) $(CXXFLAGS) -MT a-Ball.obj -MD -MP -MF $(DEPDIR)/a-Ball.Tpo -c -o a-Ball.obj `if test -f 'Ball.cpp'; then $(CYGPATH_W) 'Ball.cpp'; else $(CYGPATH_W) '$(srcdir)/Ball.cpp'; fi`
-	$(AM_V_at)$(am__mv) $(DEPDIR)/a-Ball.Tpo $(DEPDIR)/a-Ball.Po
-#	$(AM_V_CXX)source='Ball.cpp' object='a-Ball.obj' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(a_CPPFLAGS) $(CPPFLAGS) $(a_CXXFLAGS) $(CXXFLAGS) -c -o a-Ball.obj `if test -f 'Ball.cpp'; then $(CYGPATH_W) 'Ball.cpp'; else $(CYGPATH_W) '$(srcdir)/Ball.cpp'; fi`
-
-a-Server.o: Server.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(a_CPPFLAGS) $(CPPFLAGS) $(a_CXXFLAGS) $(CXXFLAGS) -MT a-Server.o -MD -MP -MF $(DEPDIR)/a-Server.Tpo -c -o a-Server.o `test -f 'Server.cpp' || echo '$(srcdir)/'`Server.cpp
-	$(AM_V_at)$(am__mv) $(DEPDIR)/a-Server.Tpo $(DEPDIR)/a-Server.Po
-#	$(AM_V_CXX)source='Server.cpp' object='a-Server.o' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(a_CPPFLAGS) $(CPPFLAGS) $(a_CXXFLAGS) $(CXXFLAGS) -c -o a-Server.o `test -f 'Server.cpp' || echo '$(srcdir)/'`Server.cpp
-
-a-Server.obj: Server.cpp
-	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(a_CPPFLAGS) $(CPPFLAGS) $(a_CXXFLAGS) $(CXXFLAGS) -MT a-Server.obj -MD -MP -MF $(DEPDIR)/a-Server.Tpo -c -o a-Server.obj `if test -f 'Server.cpp'; then $(CYGPATH_W) 'Server.cpp'; else $(CYGPATH_W) '$(srcdir)/Server.cpp'; fi`
-	$(AM_V_at)$(am__mv) $(DEPDIR)/a-Server.Tpo $(DEPDIR)/a-Server.Po
-#	$(AM_V_CXX)source='Server.cpp' object='a-Server.obj' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(a_CPPFLAGS) $(CPPFLAGS) $(a_CXXFLAGS) $(CXXFLAGS) -c -o a-Server.obj `if test -f 'Server.cpp'; then $(CYGPATH_W) 'Server.cpp'; else $(CYGPATH_W) '$(srcdir)/Server.cpp'; fi`
 
 a-NetManager.o: NetManager.cpp
 	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(a_CPPFLAGS) $(CPPFLAGS) $(a_CXXFLAGS) $(CXXFLAGS) -MT a-NetManager.o -MD -MP -MF $(DEPDIR)/a-NetManager.Tpo -c -o a-NetManager.o `test -f 'NetManager.cpp' || echo '$(srcdir)/'`NetManager.cpp

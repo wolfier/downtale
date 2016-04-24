@@ -1002,7 +1002,7 @@ a-GameObject.o: GameObject.cpp /usr/include/stdc-predef.h GameObject.h \
  /usr/include/bullet/BulletDynamics/Vehicle/btWheelInfo.h \
  /usr/include/bullet/BulletDynamics/Dynamics/btActionInterface.h \
  /usr/include/bullet/BulletDynamics/Dynamics/btRigidBody.h \
- BulletContactCallback.h MotionState.h Event.h
+ BulletContactCallback.h MotionState.h
 
 /usr/include/stdc-predef.h:
 
@@ -3201,5 +3201,3 @@ PhysicsObject.h:
 BulletContactCallback.h:
 
 MotionState.h:
-
-Event.h:
