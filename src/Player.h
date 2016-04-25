@@ -7,5 +7,7 @@ public:
 	Player(Ogre::SceneManager* mgr, Ogre::SceneNode* node);
 
 	bool update(void);
+	void remove(void);
+	void reinit(void);
 
 };

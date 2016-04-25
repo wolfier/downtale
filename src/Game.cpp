@@ -37,9 +37,9 @@ struct Position {
 };
 
 Game::Game(void) : serverIP(NULL) {
-    // isGameRunning = false;
+    isGameRunning = false;
     // isServer = false;
-    // isSinglePlayer = true;
+    isSinglePlayer = true;
     // isBallLaunched = false;
     // score = 0;
     // cscore = 0;
@@ -99,6 +99,21 @@ void Game::createScene(void) {
     mRootNode = mSceneMgr->getRootSceneNode();
     mPhysics = new Physics(mSceneMgr, true);
 
+    // Player
+    mPlayer = new Player(mSceneMgr, mRootNode);
+    mPlayer->setPosition(0, 0, 0);
+    mPlayer->setScale(5, 5, 5);
+
+    PhysicsObject* playerPhysics = new PhysicsObject(mPhysics);
+    playerPhysics->setShape(new btSphereShape(5.0f));
+    playerPhysics->updateTransform(mPlayer->getPosition(), mPlayer->getOrientation());
+    playerPhysics->setRestitution(0.95f);
+    playerPhysics->setMass(0);//0.2f);
+    playerPhysics->addToSimulator(mPlayer->getNode());
+
+    mPlayer->addPhysicsObject(playerPhysics);
+
+
     // ground
     // Ogre::Plane plane(Ogre::Vector3::UNIT_Y, 0);
     // Ogre::MeshPtr planePtr = Ogre::MeshManager::getSingleton().createPlane(
@@ -156,52 +171,39 @@ void Game::createScene(void) {
 
     // mTable->addPhysicsObject(tablePhysics);
 
-    // // ball
-    // mBall = new Ball(mSceneMgr, mRootNode, &eventQueue);
-    // mBall->setPosition(0, 20, -400);
-    // mBall->setScale(5, 5, 5);
-
-    // PhysicsObject* ballPhysics = new PhysicsObject(mPhysics);
-    // ballPhysics->setShape(new btSphereShape(5.0f));
-    // ballPhysics->updateTransform(mBall->getPosition(), mBall->getOrientation());
-    // ballPhysics->setRestitution(0.95f);
-    // ballPhysics->setMass(0.2f);
-    // // ballPhysics->setInitVelocity(btVector3(0, 0, 200));
-    // ballPhysics->addToSimulator(mBall->getNode());
-
-    // mBall->addPhysicsObject(ballPhysics);
-
-    // // lights
-    // mSceneMgr->setAmbientLight(Ogre::ColourValue(0, 0, 0));
-    // mSceneMgr->setShadowTechnique(Ogre::SHADOWTYPE_STENCIL_ADDITIVE);
-    // Ogre::Light* light = mSceneMgr->createLight("MainLight");
-    // light->setType(Ogre::Light::LT_POINT);
-    // light->setDirection(-1, 0, 0);
-    // light->setDiffuseColour(Ogre::ColourValue::White);
-    // light->setSpecularColour(Ogre::ColourValue::White);
-    // light->setPosition(0, 50, -160);
-    // Ogre::Light* light2 = mSceneMgr->createLight("Light2");
-    // light2->setType(Ogre::Light::LT_POINT);
-    // light2->setDiffuseColour(Ogre::ColourValue::White);
-    // light2->setSpecularColour(Ogre::ColourValue::White);
-    // light2->setPosition(0, 50, 100);
+    // lights
+    mSceneMgr->setAmbientLight(Ogre::ColourValue(1, 1, 1));
+    mSceneMgr->setShadowTechnique(Ogre::SHADOWTYPE_STENCIL_ADDITIVE);
+    Ogre::Light* light = mSceneMgr->createLight("MainLight");
+    light->setType(Ogre::Light::LT_DIRECTIONAL);
+    light->setDirection(-1, 0, 0);
+    light->setDiffuseColour(Ogre::ColourValue::White);
+    light->setSpecularColour(Ogre::ColourValue::White);
+    light->setPosition(0, 50, -160);
+    Ogre::Light* light2 = mSceneMgr->createLight("Light2");
+    light2->setType(Ogre::Light::LT_POINT);
+    light2->setDiffuseColour(Ogre::ColourValue::White);
+    light2->setSpecularColour(Ogre::ColourValue::White);
+    light2->setPosition(0, 50, 100);
 
     // camera
-    mCamera->setPosition(0, 50, 125);
+    mCamera->setPosition(0, 200, 0);
+    mCamera->setDirection(Ogre::Vector3::NEGATIVE_UNIT_Y);
 
     // skybox
     mSceneMgr->setSkyBox(true, "Examples/SceneSkyBox1");
 }
 
 bool Game::setupSinglePlayer(const CEGUI::EventArgs &e){
-    // isSinglePlayer = true;
-    // isGameRunning = true;
-    // mainMenu->setVisible(false);
+    isSinglePlayer = true;
+    isGameRunning = true;
+    mainMenu->setVisible(false);
     // HUD->setVisible(true);
-    // CEGUI::System::getSingleton().getDefaultGUIContext().getMouseCursor().hide();
+    CEGUI::System::getSingleton().getDefaultGUIContext().getMouseCursor().hide();
     // mBall->launch();
     // mBall->reset();
     // mBall->readd();
+    mPlayer-> reinit();
 
     return true;
 }

@@ -3,8 +3,8 @@
 Player::Player(Ogre::SceneManager* mgr, Ogre::SceneNode* node) :
 		GameObject(mgr, node, "Player") {
 
-	setEntityObject(new EntityObject(mgr, "models/Player.mesh",
-			"PlayerMat", true));
+	setEntityObject(new EntityObject(mgr, "sphere.mesh",
+			"ExamplesSphereMappedRustySteel", true));
 
 //     spawnPos = node->getPosition();
 //     spawnRot = node->getOrientation();
@@ -17,13 +17,13 @@ bool Player::update(){
 	return false;
 }
 
-// void Player::reset() {
-// 	physicsObj->reset();
-// }
+void Player::remove() {
+	physicsObj->remove();
+}
 
-// void Player::readd() {
-// 	physicsObj->readd();
-// }
+void Player::reinit() {
+	physicsObj->reinit();
+}
 
 // void Player::launch() {
 // 	physicsObj->setInitVelocity(0,0,200);

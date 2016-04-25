@@ -84,8 +84,8 @@ protected:
     // float               paddleBoundY;
     // bool                isSwinging;
     // bool                isServer;
-    // bool                isSinglePlayer;
-    // bool                isGameRunning;
+    bool                isSinglePlayer;
+    bool                isGameRunning;
     // bool                isBallLaunched;
     // bool                networkStarted;
     // int                 score;
