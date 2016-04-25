@@ -52,3 +52,4 @@ void Physics::stepSimulation(const Ogre::Real elapsedTime, int maxSubSteps, cons
     if( debug ) mDebugDrawer->Update();
 }
 
+void Physics::setDebug(bool b) { debug = b; }

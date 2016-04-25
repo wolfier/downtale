@@ -114,6 +114,7 @@ void Game::createScene(void) {
 
     mPlayer->addPhysicsObject(mPlayerPhysics);
 
+
     // // ground
     // Ogre::Plane plane(Ogre::Vector3::UNIT_Y, 0);
     // Ogre::MeshPtr planePtr = Ogre::MeshManager::getSingleton().createPlane(
@@ -138,15 +139,18 @@ void Game::createScene(void) {
     // mGround->addPhysicsObject(groundPhysics);
 
     for (int i = -50000; i < 0; i += 5) {
-        float r1, r2;
+        float r1, r2, w, l;
         if ((r1 = static_cast<float>(rand()) / RAND_MAX) < 0.1) {
             r1 = static_cast<float>(rand()) / RAND_MAX * 2000 - 1000;
             r2 = static_cast<float>(rand()) / RAND_MAX * 2000 - 1000;
             GameObject* box = new GameObject(mSceneMgr, mRootNode, "Box" + std::to_string(i));
             box->setPosition(r1, i, r2);
 
+            w = static_cast<float>(rand()) / RAND_MAX * 50 + 20;
+            l = static_cast<float>(rand()) / RAND_MAX * 50 + 20;
+
             PhysicsObject* boxPhysics = new PhysicsObject(mPhysics);
-            boxPhysics->setShape(new btBoxShape(btVector3(30, 30, 30)));
+            boxPhysics->setShape(new btBoxShape(btVector3(w, 30, l)));
             boxPhysics->updateTransform(box->getPosition(), box->getOrientation());
             boxPhysics->setMass(0);
             boxPhysics->addToSimulator(box->getNode());
@@ -189,6 +193,17 @@ void Game::createScene(void) {
     // tablePhysics->addToSimulator(mTable->getNode());
 
     // mTable->addPhysicsObject(tablePhysics);
+
+    points.push_back(Ogre::Vector3(0.0f, 500.0f, 0.0f ));
+    points.push_back(Ogre::Vector3(0.0f, -50000.0f, 0.0f ));
+     
+    lines = new CDynamicLineDrawer();
+    for (int i=0; i<points.size(); i++) {
+      lines->AddPoint(points[i], Ogre::ColourValue(1, 1, 1));
+    }
+    lines->Update();
+    Ogre::SceneNode *linesNode = mSceneMgr->getRootSceneNode()->createChildSceneNode("lines");
+    linesNode->attachObject(lines);
 
     // lights
     mSceneMgr->setAmbientLight(Ogre::ColourValue(1, 1, 1));
@@ -268,6 +283,40 @@ bool Game::frameRenderingQueued(const Ogre::FrameEvent& evt) {
     //     if (mNetMgr->tcpClientData[0]->output[0] == 1)
     //         mBall->reset();
     // }
+
+    points.push_back(mPlayer->getPosition());
+
+    Ogre::SceneNode *lnode = dynamic_cast<Ogre::SceneNode*>(mSceneMgr->getRootSceneNode()->getChild("lines"));
+    CDynamicLineDrawer *lines = dynamic_cast<CDynamicLineDrawer*>(lnode->getAttachedObject(0));
+     
+    // add points if you wish (maybe elsewhere, this is just an example)
+    //somePoints.push_back(Ogre::Vector3(4543.0f, 45.0f, 134.0f));
+     
+    if (lines->GetNumPoints()!= points.size()) {
+      // Oh no!  Size changed, just recreate the list from scratch
+      lines->Clear();
+      for (int i=0; i<points.size(); ++i) {
+        lines->AddPoint(points[i], Ogre::ColourValue(1, 1, 1));
+      }
+    }
+    else {
+      // Just values have changed, use 'setPoint' instead of 'addPoint'
+      for (int i=0; i<points.size(); ++i) {
+        lines->SetPoint(i, points[i], Ogre::ColourValue(1, 1, 1));
+      }
+    }
+    lines->Update();
+
+    // if ((static_cast<float>(rand()) / RAND_MAX) < 0.2) {
+    //     mPhysics->setDebug(0);
+    // }else{
+    //     mPhysics->setDebug(1);
+    // }
+    if(mSceneMgr->getAmbientLight().g <= 0 || mSceneMgr->getAmbientLight().g > 1){
+        flow = -flow;
+    }
+    mSceneMgr->setAmbientLight(Ogre::ColourValue(1, mSceneMgr->getAmbientLight().g-flow*0.001, 1));
+
         
     mKeyboard->capture();
     mMouse->capture();
@@ -616,6 +665,10 @@ bool Game::keyReleased(const OIS::KeyEvent &arg){
         case OIS::KC_SPACE:
             movement ^= BRAKE;
             break;
+        case OIS::KC_G:
+            // mCamera->setDirection(Ogre::Vector3::NEGATIVE_UNIT_Y);
+            // mCamera->lookAt(0,0,-1);
+            break;
         default: break;
     }
     // if (arg.key == OIS::KC_S) {
@@ -652,6 +705,15 @@ bool Game::keyPressed(const OIS::KeyEvent &arg){
             break;
         case OIS::KC_SPACE:
             movement ^= BRAKE;
+            break;
+        case OIS::KC_G:
+            // mCamera->roll(Ogre::Radian(180));
+            // mCamera->lookAt(0,0,-1);
+            break;
+        case OIS::KC_K:
+            mPlayer->setPosition(Ogre::Vector3(0,500,0));
+            mPlayer->reinit();
+            // mCamera->lookAt(0,0,-1);
             break;
         default: break;
     }

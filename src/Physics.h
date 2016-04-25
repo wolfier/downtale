@@ -37,6 +37,7 @@ public:
     void checkCollide(PhysicsObject* a, PhysicsObject* b);
     btDiscreteDynamicsWorld* getDynamicsWorld();
     void setGravity(btScalar y);
+    void setDebug(bool b);
 
 };
 

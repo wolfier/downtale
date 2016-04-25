@@ -33,6 +33,7 @@ http://www.ogre3d.org/wiki/
 #include "Player.h"
 
 #include "NetManager.h"
+#include "DynamicLineDrawer.hpp"
 
 #include <CEGUI/CEGUI.h>
 #include <CEGUI/RendererModules/Ogre/Renderer.h>
@@ -91,7 +92,7 @@ protected:
     CEGUI::Window* HUD;
 
     int movement = 0;
-
+    float flow = -1;
     // float               dragSensitivity;
     // float               swingSensitivity;
     // float               rotSensitivity;
@@ -111,6 +112,9 @@ protected:
     // std::queue<Event> eventQueue;
     // virtual btVector3 OgreToBulletV(Ogre::Vector3);
     // virtual btQuaternion OgreToBulletQ(Ogre::Quaternion);
+
+    std::deque<Ogre::Vector3> points;
+    CDynamicLineDrawer* lines;
 };
 
 //---------------------------------------------------------------------------
