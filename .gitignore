@@ -31,7 +31,7 @@
 *.log
 
 # Ogre-specific stuff
-src/a
+src/downtale
 src/.deps/
 src/Makefile
 src/Makefile.in
