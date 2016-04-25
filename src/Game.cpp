@@ -105,7 +105,7 @@ void Game::createScene(void) {
     mPlayer->setScale(1, 1, 1);
 
     PhysicsObject* playerPhysics = new PhysicsObject(mPhysics);
-    playerPhysics->setShape(new btSphereShape(100.0f));
+    playerPhysics->setShape(new btSphereShape(150.0f));
     playerPhysics->updateTransform(mPlayer->getPosition(), mPlayer->getOrientation());
     playerPhysics->setRestitution(0.95f);
     playerPhysics->setMass(1);
@@ -127,7 +127,7 @@ void Game::createScene(void) {
     mGround = new GameObject(mSceneMgr, mRootNode, "Ground");
     mGround->setEntityObject(
             new EntityObject(mSceneMgr, "ground", "Examples/Rockwall", false));
-    mGround->setPosition(0, -300, 0);
+    mGround->setPosition(0, -5000, 0);
 
     PhysicsObject* groundPhysics = new PhysicsObject(mPhysics);
     groundPhysics->setShape(new btBoxShape(btVector3(5000, 1, 5000)));
@@ -186,7 +186,7 @@ void Game::createScene(void) {
     // mCamera->setDirection(Ogre::Vector3::NEGATIVE_UNIT_Y);
 
     // skybox
-    mSceneMgr->setSkyBox(true, "Examples/SceneSkyBox1");
+    // mSceneMgr->setSkyBox(true, "Examples/SceneSkyBox1");
 }
 
 bool Game::setupSinglePlayer(const CEGUI::EventArgs &e){
@@ -375,6 +375,9 @@ bool Game::frameRenderingQueued(const Ogre::FrameEvent& evt) {
     //         }
     //     }
     // }
+
+    mCamera->setPosition(mPlayer->getPosition() + Ogre::Vector3(0,700,0));
+
 
     simulate(evt);
     CEGUI::System::getSingleton().injectTimePulse(evt.timeSinceLastFrame);
