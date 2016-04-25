@@ -105,7 +105,7 @@ void Game::createScene(void) {
     mPlayer->setScale(1, 1, 1);
 
     mPlayerPhysics = new PhysicsObject(mPhysics);
-    mPlayerPhysics->setShape(new btSphereShape(150.0f));
+    mPlayerPhysics->setShape(new btSphereShape(10.0f));
     mPlayerPhysics->updateTransform(mPlayer->getPosition(), mPlayer->getOrientation());
     mPlayerPhysics->setRestitution(1.0f);
     mPlayerPhysics->setMass(1);
@@ -114,28 +114,47 @@ void Game::createScene(void) {
 
     mPlayer->addPhysicsObject(mPlayerPhysics);
 
-    // ground
-    Ogre::Plane plane(Ogre::Vector3::UNIT_Y, 0);
-    Ogre::MeshPtr planePtr = Ogre::MeshManager::getSingleton().createPlane(
-        "ground",
-        Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
-        plane, 
-        2000, 2000, 20, 20, 
-        true, 
-        1, 5, 10, 
-        Ogre::Vector3::UNIT_Z);
+    // // ground
+    // Ogre::Plane plane(Ogre::Vector3::UNIT_Y, 0);
+    // Ogre::MeshPtr planePtr = Ogre::MeshManager::getSingleton().createPlane(
+    //     "ground",
+    //     Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
+    //     plane, 
+    //     2000, 2000, 20, 20, 
+    //     true, 
+    //     1, 5, 10, 
+    //     Ogre::Vector3::UNIT_Z);
 
-    mGround = new GameObject(mSceneMgr, mRootNode, "Ground");
-    mGround->setEntityObject(
-            new EntityObject(mSceneMgr, "ground", "Examples/Rockwall", false));
-    mGround->setPosition(0, -5000, 0);
+    // mGround = new GameObject(mSceneMgr, mRootNode, "Ground");
+    // mGround->setEntityObject(
+    //         new EntityObject(mSceneMgr, "ground", "Examples/Rockwall", false));
+    // mGround->setPosition(0, -5000, 0);
 
-    PhysicsObject* groundPhysics = new PhysicsObject(mPhysics);
-    groundPhysics->setShape(new btBoxShape(btVector3(5000, 1, 5000)));
-    groundPhysics->updateTransform(mGround->getPosition(), mGround->getOrientation());
-    groundPhysics->addToSimulator(mGround->getNode());
+    // PhysicsObject* groundPhysics = new PhysicsObject(mPhysics);
+    // groundPhysics->setShape(new btBoxShape(btVector3(5000, 1, 5000)));
+    // groundPhysics->updateTransform(mGround->getPosition(), mGround->getOrientation());
+    // groundPhysics->addToSimulator(mGround->getNode());
 
-    mGround->addPhysicsObject(groundPhysics);
+    // mGround->addPhysicsObject(groundPhysics);
+
+    for (int i = -50000; i < 0; i += 5) {
+        float r1, r2;
+        if ((r1 = static_cast<float>(rand()) / RAND_MAX) < 0.1) {
+            r1 = static_cast<float>(rand()) / RAND_MAX * 2000 - 1000;
+            r2 = static_cast<float>(rand()) / RAND_MAX * 2000 - 1000;
+            GameObject* box = new GameObject(mSceneMgr, mRootNode, "Box" + std::to_string(i));
+            box->setPosition(r1, i, r2);
+
+            PhysicsObject* boxPhysics = new PhysicsObject(mPhysics);
+            boxPhysics->setShape(new btBoxShape(btVector3(30, 30, 30)));
+            boxPhysics->updateTransform(box->getPosition(), box->getOrientation());
+            boxPhysics->setMass(0);
+            boxPhysics->addToSimulator(box->getNode());
+
+            box->addPhysicsObject(boxPhysics);
+            boxes.push_back(box);
+        }
+    }
 
     // // paddle
     // mPaddle = new Paddle(mSceneMgr, mRootNode, &eventQueue);
@@ -397,7 +416,7 @@ bool Game::frameRenderingQueued(const Ogre::FrameEvent& evt) {
         mPlayerPhysics->getBody()->applyCentralImpulse(btVector3(0, 0.5, 0));
     }
 
-    mCamera->setPosition(mPlayer->getPosition() + Ogre::Vector3(0,-151,0));
+    mCamera->setPosition(mPlayer->getPosition() + Ogre::Vector3(0,-12,0));
 
 
     simulate(evt);

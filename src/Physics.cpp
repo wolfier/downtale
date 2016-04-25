@@ -9,7 +9,7 @@ Physics::Physics(Ogre::SceneManager* mgr, bool _debug) {
     overlappingPairCache = new btDbvtBroadphase();
     solver = new btSequentialImpulseConstraintSolver();
     dynamicsWorld = new btDiscreteDynamicsWorld(dispatcher,overlappingPairCache,solver,collisionConfiguration);
-    dynamicsWorld->setGravity(btVector3(0.0f, -150.0f, 0.0f));
+    dynamicsWorld->setGravity(btVector3(0.0f, -50.0f, 0.0f));
    
     debug = _debug;
     sceneMgr = mgr;

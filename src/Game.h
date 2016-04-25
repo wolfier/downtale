@@ -25,6 +25,8 @@ http://www.ogre3d.org/wiki/
 #ifndef __Game_h_
 #define __Game_h_
 
+#include <vector>
+
 #include "BaseApplication.h"
 #include "Physics.h"
 #include "Sound.h"
@@ -78,6 +80,7 @@ protected:
     // Table*              mTable;
     Player*                mPlayer;
     PhysicsObject*         mPlayerPhysics;
+    std::vector<GameObject*> boxes;
 
     Sound*              mSound;
     NetManager*         mNetMgr;
