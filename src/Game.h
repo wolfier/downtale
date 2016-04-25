@@ -64,7 +64,7 @@ protected:
     Ogre::SceneNode*    mRootNode;
     Physics*            mPhysics;
 
-    // GameObject*         mGround;
+    GameObject*         mGround;
     // Paddle*             mPaddle;
     // Table*              mTable;
     Player*                mPlayer;

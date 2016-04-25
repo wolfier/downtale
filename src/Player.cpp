@@ -4,7 +4,7 @@ Player::Player(Ogre::SceneManager* mgr, Ogre::SceneNode* node) :
 		GameObject(mgr, node, "Player") {
 
 	setEntityObject(new EntityObject(mgr, "sphere.mesh",
-			"ExamplesSphereMappedRustySteel", true));
+			"Examples/SphereMappedRustySteel", true));
 
 //     spawnPos = node->getPosition();
 //     spawnRot = node->getOrientation();
