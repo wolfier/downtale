@@ -37,6 +37,14 @@ http://www.ogre3d.org/wiki/
 
 //---------------------------------------------------------------------------
 
+enum DIRECTION {
+    UP = 1 << 0,
+    LEFT = 1 << 1,
+    DOWN = 1 << 2,
+    RIGHT = 1 << 3,
+    BRAKE = 1 << 4
+};
+
 class Game : public BaseApplication {
 public:
     Game(void);
@@ -60,6 +68,7 @@ protected:
     virtual bool mouseReleased(const OIS::MouseEvent &arg, OIS::MouseButtonID id);
     virtual bool mousePressed(const OIS::MouseEvent &arg, OIS::MouseButtonID id);
     virtual bool keyPressed(const OIS::KeyEvent &arg);
+    virtual bool keyReleased(const OIS::KeyEvent &arg);
 
     Ogre::SceneNode*    mRootNode;
     Physics*            mPhysics;
@@ -68,6 +77,7 @@ protected:
     // Paddle*             mPaddle;
     // Table*              mTable;
     Player*                mPlayer;
+    PhysicsObject*         mPlayerPhysics;
 
     Sound*              mSound;
     NetManager*         mNetMgr;
@@ -76,6 +86,8 @@ protected:
     CEGUI::Window* mRootWindow;
     CEGUI::Window* mainMenu;
     CEGUI::Window* HUD;
+
+    int movement = 0;
 
     // float               dragSensitivity;
     // float               swingSensitivity;

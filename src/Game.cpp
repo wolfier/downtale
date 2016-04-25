@@ -104,14 +104,15 @@ void Game::createScene(void) {
     mPlayer->setPosition(0, 500, 0);
     mPlayer->setScale(1, 1, 1);
 
-    PhysicsObject* playerPhysics = new PhysicsObject(mPhysics);
-    playerPhysics->setShape(new btSphereShape(150.0f));
-    playerPhysics->updateTransform(mPlayer->getPosition(), mPlayer->getOrientation());
-    playerPhysics->setRestitution(0.95f);
-    playerPhysics->setMass(1);
-    playerPhysics->addToSimulator(mPlayer->getNode());
+    mPlayerPhysics = new PhysicsObject(mPhysics);
+    mPlayerPhysics->setShape(new btSphereShape(150.0f));
+    mPlayerPhysics->updateTransform(mPlayer->getPosition(), mPlayer->getOrientation());
+    mPlayerPhysics->setRestitution(1.0f);
+    mPlayerPhysics->setMass(1);
+    // mPlayerPhysics->setKinematic();
+    mPlayerPhysics->addToSimulator(mPlayer->getNode());
 
-    mPlayer->addPhysicsObject(playerPhysics);
+    mPlayer->addPhysicsObject(mPlayerPhysics);
 
     // ground
     Ogre::Plane plane(Ogre::Vector3::UNIT_Y, 0);
@@ -376,7 +377,27 @@ bool Game::frameRenderingQueued(const Ogre::FrameEvent& evt) {
     //     }
     // }
 
-    mCamera->setPosition(mPlayer->getPosition() + Ogre::Vector3(0,700,0));
+    if (movement & UP) {
+        // mPlayer->setPosition(mPlayer->getPosition()+Ogre::Vector3(0,0,-2));
+        mPlayerPhysics->getBody()->applyCentralImpulse(btVector3(0, 0, -0.5));
+    }
+    if (movement & LEFT) {
+        // mPlayer->setPosition(mPlayer->getPosition()+Ogre::Vector3(-2,0,0));
+        mPlayerPhysics->getBody()->applyCentralImpulse(btVector3(-0.5, 0, 0));
+    }
+    if (movement & DOWN) {
+        // mPlayer->setPosition(mPlayer->getPosition()+Ogre::Vector3(0,0,2));
+        mPlayerPhysics->getBody()->applyCentralImpulse(btVector3(0, 0, 0.5));
+    }
+    if (movement & RIGHT) {
+        // mPlayer->setPosition(mPlayer->getPosition()+Ogre::Vector3(2,0,0));
+        mPlayerPhysics->getBody()->applyCentralImpulse(btVector3(0.5, 0, 0));
+    }
+    if (movement & BRAKE && mPlayerPhysics->getBody()->getLinearVelocity().y() < -5) {
+        mPlayerPhysics->getBody()->applyCentralImpulse(btVector3(0, 0.5, 0));
+    }
+
+    mCamera->setPosition(mPlayer->getPosition() + Ogre::Vector3(0,-151,0));
 
 
     simulate(evt);
@@ -556,21 +577,76 @@ bool Game::mouseReleased(const OIS::MouseEvent &arg, OIS::MouseButtonID id) {
     return BaseApplication::mouseReleased(arg, id);
 }
 
-bool Game::keyPressed(const OIS::KeyEvent &arg){
+bool Game::keyReleased(const OIS::KeyEvent &arg){
+    switch (arg.key) {
+        case OIS::KC_M:
+            mSound->mute();
+            break;
+        case OIS::KC_W:
+            movement ^= UP;
+            break;
+        case OIS::KC_A:
+            movement ^= LEFT;
+            break;
+        case OIS::KC_S:
+            movement ^= DOWN;
+            break;
+        case OIS::KC_D:
+            movement ^= RIGHT;
+            break;
+        case OIS::KC_SPACE:
+            movement ^= BRAKE;
+            break;
+        default: break;
+    }
     // if (arg.key == OIS::KC_S) {
     //     mSound->mute();
-    // } else if (arg.key == OIS::KC_SPACE) {
-    //     // if (serverIP != NULL) {
-    //     //     const char data = 1;
-    //     //     mNetMgr->messageServer(PROTOCOL_TCP, &data, 1);
-    //     // }
-    //     if(isServer){
+    // } else if (arg.key == OIS::KC_W) {
+    //     mPlayer->setPosition(mPlayer->getPosition()+Ogre::Vector3(0,0,10));
+    // } else if (arg.key == OIS::KC_A) {
+    //     mPlayer->setPosition(mPlayer->getPosition()+Ogre::Vector3(-10,0,0));
+    // } else if (arg.key == OIS::KC_S) {
+    //     mPlayer->setPosition(mPlayer->getPosition()+Ogre::Vector3(0,0,-10));
+    // } else if (arg.key == OIS::KC_D) {
+    //     mPlayer->setPosition(mPlayer->getPosition()+Ogre::Vector3(10,0,0));
+    // }
 
-    //     }
-    //     else
-    //     {
-    //         isBallLaunched = false;
-    //     }
+    return BaseApplication::keyPressed(arg);
+}
+
+bool Game::keyPressed(const OIS::KeyEvent &arg){
+    switch (arg.key) {
+        case OIS::KC_M:
+            mSound->mute();
+            break;
+        case OIS::KC_W:
+            movement ^= UP;
+            break;
+        case OIS::KC_A:
+            movement ^= LEFT;
+            break;
+        case OIS::KC_S:
+            movement ^= DOWN;
+            break;
+        case OIS::KC_D:
+            movement ^= RIGHT;
+            break;
+        case OIS::KC_SPACE:
+            movement ^= BRAKE;
+            break;
+        default: break;
+    }
+
+    // if (arg.key == OIS::KC_S) {
+    //     mSound->mute();
+    // } else if (arg.key == OIS::KC_W) {
+    //     mPlayer->setPosition(mPlayer->getPosition()+Ogre::Vector3(0,0,10));
+    // } else if (arg.key == OIS::KC_A) {
+    //     mPlayer->setPosition(mPlayer->getPosition()+Ogre::Vector3(-10,0,0));
+    // } else if (arg.key == OIS::KC_S) {
+    //     mPlayer->setPosition(mPlayer->getPosition()+Ogre::Vector3(0,0,-10));
+    // } else if (arg.key == OIS::KC_D) {
+    //     mPlayer->setPosition(mPlayer->getPosition()+Ogre::Vector3(10,0,0));
     // }
 
     return BaseApplication::keyPressed(arg);

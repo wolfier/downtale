@@ -22,6 +22,7 @@ public:
     Ogre::Vector3 getLocalPosition();
     Ogre::Quaternion getOrientation();
     void setPosition(float x, float y, float z);
+    void setPosition(Ogre::Vector3 v);
     void setScale(float x, float y, float z);
     void setRotation(float pitch, float yaw, float roll);
     void translate(float x, float y, float z);

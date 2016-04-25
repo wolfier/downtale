@@ -38,6 +38,7 @@ Ogre::Vector3 GameObject::getLocalPosition() { return sceneNode->convertWorldToL
 Ogre::Quaternion GameObject::getOrientation() { return sceneNode->getOrientation(); }
 
 void GameObject::setPosition(float x, float y, float z) { sceneNode->setPosition(Ogre::Vector3(x,y,z)); }
+void GameObject::setPosition(Ogre::Vector3 v) { sceneNode->setPosition(v); }
 
 void GameObject::setScale(float x, float y, float z) { sceneNode->setScale(Ogre::Vector3(x,y,z)); }
 
