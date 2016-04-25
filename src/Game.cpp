@@ -102,7 +102,7 @@ void Game::createScene(void) {
     // Player
     mPlayer = new Player(mSceneMgr, mRootNode);
     mPlayer->setPosition(0, 500, 0);
-    mPlayer->setScale(0.5, 0.5, 0.5);
+    mPlayer->setScale(1, 1, 1);
 
     PhysicsObject* playerPhysics = new PhysicsObject(mPhysics);
     playerPhysics->setShape(new btSphereShape(100.0f));
@@ -112,7 +112,6 @@ void Game::createScene(void) {
     playerPhysics->addToSimulator(mPlayer->getNode());
 
     mPlayer->addPhysicsObject(playerPhysics);
-
 
     // ground
     Ogre::Plane plane(Ogre::Vector3::UNIT_Y, 0);
@@ -176,15 +175,10 @@ void Game::createScene(void) {
     mSceneMgr->setShadowTechnique(Ogre::SHADOWTYPE_STENCIL_ADDITIVE);
     Ogre::Light* light = mSceneMgr->createLight("MainLight");
     light->setType(Ogre::Light::LT_DIRECTIONAL);
-    light->setDirection(-1, 0, 0);
+    light->setDirection(0, -1, 0);
     light->setDiffuseColour(Ogre::ColourValue::White);
     light->setSpecularColour(Ogre::ColourValue::White);
-    light->setPosition(0, 50, -160);
-    Ogre::Light* light2 = mSceneMgr->createLight("Light2");
-    light2->setType(Ogre::Light::LT_POINT);
-    light2->setDiffuseColour(Ogre::ColourValue::White);
-    light2->setSpecularColour(Ogre::ColourValue::White);
-    light2->setPosition(0, 50, 100);
+    light->setPosition(0, 200, 0);
 
     // camera
     mCamera->setPosition(Ogre::Vector3(0, 1000, 0));
@@ -255,11 +249,10 @@ bool Game::frameRenderingQueued(const Ogre::FrameEvent& evt) {
     //         mBall->reset();
     // }
         
-    // mKeyboard->capture();
-    // mMouse->capture();
+    mKeyboard->capture();
+    mMouse->capture();
 
-    // mPhysics->stepSimulation(evt.timeSinceLastFrame, 1, 1/60.0f);
-    // // mGUI->injectTimePulse(evt.timeSinceLastFrame);
+    mPhysics->stepSimulation(evt.timeSinceLastFrame, 1, 1/60.0f);
 
     // mPhysics->checkCollide(mGround->getPhysicsObject(), mBall->getPhysicsObject());
     // int score = getScore();
