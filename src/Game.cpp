@@ -56,7 +56,7 @@ Game::~Game(void) {
 
 void Game::setupGUI(){
     renderer = &CEGUI::OgreRenderer::bootstrapSystem();
-    
+
     CEGUI::ImageManager::setImagesetDefaultResourceGroup("Imagesets");
     CEGUI::Font::setDefaultResourceGroup("Fonts");
     CEGUI::Scheme::setDefaultResourceGroup("Schemes");
@@ -120,10 +120,10 @@ void Game::createScene(void) {
     // Ogre::MeshPtr planePtr = Ogre::MeshManager::getSingleton().createPlane(
     //     "ground",
     //     Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
-    //     plane, 
-    //     2000, 2000, 20, 20, 
-    //     true, 
-    //     1, 5, 10, 
+    //     plane,
+    //     2000, 2000, 20, 20,
+    //     true,
+    //     1, 5, 10,
     //     Ogre::Vector3::UNIT_Z);
 
     // mGround = new GameObject(mSceneMgr, mRootNode, "Ground");
@@ -196,7 +196,7 @@ void Game::createScene(void) {
 
     points.push_back(Ogre::Vector3(0.0f, 500.0f, 0.0f ));
     points.push_back(Ogre::Vector3(0.0f, -50000.0f, 0.0f ));
-     
+
     lines = new CDynamicLineDrawer();
     for (int i=0; i<points.size(); i++) {
       lines->AddPoint(points[i], Ogre::ColourValue(1, 1, 1));
@@ -217,7 +217,8 @@ void Game::createScene(void) {
 
     // camera
     mCamera->setPosition(Ogre::Vector3(0, 1000, 0));
-    mCamera->lookAt(Ogre::Vector3(0,0,-1));
+    // mCamera->lookAt(Ogre::Vector3(0,0,-1));
+
     // mCamera->setDirection(Ogre::Vector3::NEGATIVE_UNIT_Y);
 
     // skybox
@@ -258,7 +259,7 @@ bool Game::setupMultiplayer(const CEGUI::EventArgs &e){
     // mRootWindow->getChild("mainMenu/singlePlayerButton")->setVisible(false);
     // mRootWindow->getChild("mainMenu/multiplayerButton")->setVisible(false);
     // mRootWindow->getChild("mainMenu/infoBox")->setText("Host IP is " + mNetMgr->getIPstring() + "\nWaiting for client... " );
-    
+
     // mPhysics->setGravity(0.f);
 
     // mBall->reset();
@@ -288,10 +289,10 @@ bool Game::frameRenderingQueued(const Ogre::FrameEvent& evt) {
 
     Ogre::SceneNode *lnode = dynamic_cast<Ogre::SceneNode*>(mSceneMgr->getRootSceneNode()->getChild("lines"));
     CDynamicLineDrawer *lines = dynamic_cast<CDynamicLineDrawer*>(lnode->getAttachedObject(0));
-     
+
     // add points if you wish (maybe elsewhere, this is just an example)
     //somePoints.push_back(Ogre::Vector3(4543.0f, 45.0f, 134.0f));
-     
+
     if (lines->GetNumPoints()!= points.size()) {
       // Oh no!  Size changed, just recreate the list from scratch
       lines->Clear();
@@ -317,7 +318,7 @@ bool Game::frameRenderingQueued(const Ogre::FrameEvent& evt) {
     }
     mSceneMgr->setAmbientLight(Ogre::ColourValue(1, mSceneMgr->getAmbientLight().g-flow*0.001, 1));
 
-        
+
     mKeyboard->capture();
     mMouse->capture();
 
@@ -376,7 +377,7 @@ bool Game::frameRenderingQueued(const Ogre::FrameEvent& evt) {
     //             simulate(evt);
     //             if(mNetMgr->scanForActivity()){
     //                 mNetMgr->tcpServerData.updated = false;
-                    
+
     //                 if( strcmp("200", mNetMgr->tcpClientData[0]->output) == 0){
     //                     printf("%s\n", "launching");
     //                     mPhysics->setGravity(-150.f);
@@ -421,20 +422,20 @@ bool Game::frameRenderingQueued(const Ogre::FrameEvent& evt) {
     //                     printf("%s\n", "got 300");
     //                 }
     //                 if(isBallLaunched){
-                       
+
     //                         // struct Position p;
     //                         // p.bx = mBall->getPosition().x;
     //                         // p.by = mBall->getPosition().y+10;
     //                         // p.bz = -400;
-                
+
     //                         // mNetMgr->messageServer(PROTOCOL_TCP, (char *)&p, sizeof(Position) & INT_MAX);
-                   
+
     //                     struct Position *p = (struct Position *)mNetMgr->tcpServerData.output;
 
     //                     mBall->setPosition(p->bx, p->by, p->bz);
     //                     mPaddle->setPosition(p->px, p->py, p->pz);
     //                     score = p->score;
-                        
+
     //                 }
     //                 else{
     //                     struct Position *p = (struct Position *)mNetMgr->tcpServerData.output;
@@ -447,30 +448,38 @@ bool Game::frameRenderingQueued(const Ogre::FrameEvent& evt) {
 
     btRigidBody* playerBody = mPlayerPhysics->getBody();
 
+    Ogre::Vector3 dir = mCamera->getDirection().normalisedCopy();
+    dir.y = 0;
+    dir.normalise();
+
+    // std::cout << dir << std::endl;
+
+    btVector3 vel = playerBody->getLinearVelocity();
+    btScalar y = vel.y();
+
     if (movement & UP) {
         // mPlayer->setPosition(mPlayer->getPosition()+Ogre::Vector3(0,0,-2));
-        playerBody->applyCentralImpulse(btVector3(0, 0, -0.5));
+        playerBody->applyCentralImpulse(btVector3(dir.x, 0, dir.z));
     }
     if (movement & LEFT) {
         // mPlayer->setPosition(mPlayer->getPosition()+Ogre::Vector3(-2,0,0));
-        playerBody->applyCentralImpulse(btVector3(-0.5, 0, 0));
+        playerBody->applyCentralImpulse(btVector3(dir.z, 0, -dir.x));
     }
     if (movement & DOWN) {
         // mPlayer->setPosition(mPlayer->getPosition()+Ogre::Vector3(0,0,2));
-        playerBody->applyCentralImpulse(btVector3(0, 0, 0.5));
+        playerBody->applyCentralImpulse(btVector3(-dir.x, 0, -dir.z));
     }
     if (movement & RIGHT) {
         // mPlayer->setPosition(mPlayer->getPosition()+Ogre::Vector3(2,0,0));
-        playerBody->applyCentralImpulse(btVector3(0.5, 0, 0));
+        playerBody->applyCentralImpulse(btVector3(-dir.z, 0, dir.x));
     }
     if (movement & BRAKE && mPlayerPhysics->getBody()->getLinearVelocity().y() < -5) {
         playerBody->applyCentralImpulse(btVector3(0, 0.5, 0));
     }
     if (movement == 0 || movement == BRAKE) {
-        btVector3 vel = playerBody->getLinearVelocity();
-        vel.setY(0);
-        vel *= -0.01;
-        mPlayerPhysics->getBody()->applyCentralImpulse(vel);
+        btVector3 v = vel;
+        v.setY(0);
+        mPlayerPhysics->getBody()->applyCentralImpulse(v * -0.01);
     }
 
     mCamera->setPosition(mPlayer->getPosition() + Ogre::Vector3(0,-12,0));
@@ -552,13 +561,13 @@ CEGUI::MouseButton convertButton(OIS::MouseButtonID buttonID)
     {
     case OIS::MB_Left:
         return CEGUI::LeftButton;
- 
+
     case OIS::MB_Right:
         return CEGUI::RightButton;
- 
+
     case OIS::MB_Middle:
         return CEGUI::MiddleButton;
- 
+
     default:
         return CEGUI::LeftButton;
     }
@@ -589,14 +598,26 @@ bool Game::mouseMoved(const OIS::MouseEvent &arg)
     //             p.bx = mBall->getPosition().x;
     //             p.by = mBall->getPosition().y;
     //             p.bz = mBall->getPosition().z;
-    
+
     //             mNetMgr->messageServer(PROTOCOL_TCP, (char *)&p, sizeof(Position) & INT_MAX);
     //         }
     //     }
-    
+
     // }
+
+    if (isGameRunning) {
+        float sensitivity = 0.001;
+        mCamera->pitch(Ogre::Radian(arg.state.Y.rel * -sensitivity));
+        if (mCamera->getDirection().y < -0.999) {
+            // printf ("hoi\n");
+            mCamera->pitch(Ogre::Radian(arg.state.Y.rel * sensitivity));
+        }
+
+        mCamera->yaw(Ogre::Radian(arg.state.X.rel * -sensitivity));
+    }
+
     CEGUI::GUIContext& context = CEGUI::System::getSingleton().getDefaultGUIContext();
-        
+
     context.injectMouseMove(arg.state.X.rel, arg.state.Y.rel);
 
     return BaseApplication::mouseMoved(arg);
@@ -604,7 +625,7 @@ bool Game::mouseMoved(const OIS::MouseEvent &arg)
 
 bool Game::mousePressed(const OIS::MouseEvent &arg, OIS::MouseButtonID id) {
     // if(isGameRunning) {
-    //     // NEED TO IMPLEMENT 
+    //     // NEED TO IMPLEMENT
     //     // send message to client to play the sound
     //     if(isServer | isSinglePlayer){
     //         if(id == OIS::MB_Left && mSound->getSound()) {
@@ -612,7 +633,7 @@ bool Game::mousePressed(const OIS::MouseEvent &arg, OIS::MouseButtonID id) {
     //         }
     //     }
     //     else
-    //     { 
+    //     {
     //         if(id == OIS::MB_Left && !isBallLaunched) {
     //             printf("%s\n", "pressed to launch");
     //             isBallLaunched = true;
@@ -624,7 +645,7 @@ bool Game::mousePressed(const OIS::MouseEvent &arg, OIS::MouseButtonID id) {
     //             mNetMgr->messageServer(PROTOCOL_TCP, data, strlen(data));
     //             // }
     //         }
-            
+
     //     }
     // }
 
@@ -645,7 +666,7 @@ bool Game::mouseReleased(const OIS::MouseEvent &arg, OIS::MouseButtonID id) {
     //     }
     //     else
     //     {
-           
+
     //     }
     // }
     CEGUI::System::getSingleton().getDefaultGUIContext().injectMouseButtonUp(convertButton(id));
