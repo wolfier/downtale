@@ -445,24 +445,32 @@ bool Game::frameRenderingQueued(const Ogre::FrameEvent& evt) {
     //     }
     // }
 
+    btRigidBody* playerBody = mPlayerPhysics->getBody();
+
     if (movement & UP) {
         // mPlayer->setPosition(mPlayer->getPosition()+Ogre::Vector3(0,0,-2));
-        mPlayerPhysics->getBody()->applyCentralImpulse(btVector3(0, 0, -0.5));
+        playerBody->applyCentralImpulse(btVector3(0, 0, -0.5));
     }
     if (movement & LEFT) {
         // mPlayer->setPosition(mPlayer->getPosition()+Ogre::Vector3(-2,0,0));
-        mPlayerPhysics->getBody()->applyCentralImpulse(btVector3(-0.5, 0, 0));
+        playerBody->applyCentralImpulse(btVector3(-0.5, 0, 0));
     }
     if (movement & DOWN) {
         // mPlayer->setPosition(mPlayer->getPosition()+Ogre::Vector3(0,0,2));
-        mPlayerPhysics->getBody()->applyCentralImpulse(btVector3(0, 0, 0.5));
+        playerBody->applyCentralImpulse(btVector3(0, 0, 0.5));
     }
     if (movement & RIGHT) {
         // mPlayer->setPosition(mPlayer->getPosition()+Ogre::Vector3(2,0,0));
-        mPlayerPhysics->getBody()->applyCentralImpulse(btVector3(0.5, 0, 0));
+        playerBody->applyCentralImpulse(btVector3(0.5, 0, 0));
     }
     if (movement & BRAKE && mPlayerPhysics->getBody()->getLinearVelocity().y() < -5) {
-        mPlayerPhysics->getBody()->applyCentralImpulse(btVector3(0, 0.5, 0));
+        playerBody->applyCentralImpulse(btVector3(0, 0.5, 0));
+    }
+    if (movement == 0 || movement == BRAKE) {
+        btVector3 vel = playerBody->getLinearVelocity();
+        vel.setY(0);
+        vel *= -0.01;
+        mPlayerPhysics->getBody()->applyCentralImpulse(vel);
     }
 
     mCamera->setPosition(mPlayer->getPosition() + Ogre::Vector3(0,-12,0));
