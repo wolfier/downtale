@@ -1,3 +1,17 @@
+material Examples/Black
+ {
+   technique
+   {
+     pass
+     {
+       texture_unit
+       {
+         texture black.png    
+       }
+     }
+   }
+ }
+
 material Examples/Boost
 {
 	technique
@@ -6,12 +20,12 @@ material Examples/Boost
 		{
 			texture_unit
 			{
-				texture RustySteel.jpg
+				texture BeachStones.jpg
 			}
 
 			texture_unit
 			{
-				texture droplet.png
+				texture BeachStones.jpg
 				colour_op_ex add src_texture src_current
 				colour_op_multipass_fallback one one
 				env_map spherical
@@ -29,12 +43,12 @@ material Examples/Shield
 		{
 			texture_unit
 			{
-				texture BeachStones.jpg
+				texture RustySteel.jpg
 			}
 
 			texture_unit
 			{
-				texture droplet.png
+				texture RustySteel.jpg
 				colour_op_ex add src_texture src_current
 				colour_op_multipass_fallback one one
 				env_map spherical

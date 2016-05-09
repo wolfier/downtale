@@ -23,7 +23,7 @@
             </Window>
         </Window>
         <Window name="HUD" type="TaharezLook/FrameWindow">
-            <Property name="Area" value="{{0,0},{0,0},{0,300},{0,130}}" />
+            <Property name="Area" value="{{0,0},{0,0},{0,300},{0,160}}" />
             <Property name="DragMovingEnabled" value="false" />
             <Property name="VerticalAlignment" value="Top" />
             <Property name="CloseButtonEnabled" value="false" />
@@ -31,7 +31,7 @@
             <Property name="AutoRenderingSurface" value="true" />
             <Property name="Visible" value="false" />
             <Window name="PlayerScore" type="TaharezLook/StaticText">
-                <Property name="Area" value="{{0,0},{0,0},{0,273},{0,100}}" />
+                <Property name="Area" value="{{0,0},{0,0},{0,273},{0,140}}" />
                 <Property name="Text" value="Score: 0" />
                 <Property name="VerticalAlignment" value="Top" />
                 <Property name="HorizontalAlignment" value="Centre" />

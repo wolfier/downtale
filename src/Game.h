@@ -79,6 +79,7 @@ protected:
     Physics*            mPhysics;
 
     GameObject*         mRecentGround;
+    GameObject*         mFar;
     GameObject*         mFloor;
 
     // Paddle*             mPaddle;

@@ -97,13 +97,13 @@ void Game::ring(int i, int r, float x, float y){
     // box->addPhysicsObject(boxPhysics);
     // boxes.push_back(box);
 
-    if((static_cast<float>(rand()) / RAND_MAX) < 0.05){
-        if((static_cast<float>(rand()) / RAND_MAX) < 0.8){
+    if((static_cast<float>(rand()) / RAND_MAX) < 0.07){
+        if((static_cast<float>(rand()) / RAND_MAX) < 0.7){
             GameObject* mPowerup = new GameObject(mSceneMgr, mRootNode, "boost"+std::to_string(i));
             mPowerup->setEntityObject(new EntityObject(mSceneMgr, "sphere.mesh", "Examples/Boost", false));
             mPowerup->setPosition(x, i, y);
             powers.push_back(mPowerup);
-        }else {
+        }else{
             GameObject* mPowerup = new GameObject(mSceneMgr, mRootNode, "shield"+std::to_string(i));
             mPowerup->setEntityObject(new EntityObject(mSceneMgr, "sphere.mesh", "Examples/Shield", false));
             mPowerup->setPosition(x, i, y);
@@ -293,6 +293,24 @@ void Game::createScene(void) {
         // printf("b %f %f\n", l1, l2);
     }
 
+    // black far plane
+    Ogre::Plane farPlane(Ogre::Vector3::UNIT_Y, 0);
+    Ogre::MeshPtr farPlanePtr = Ogre::MeshManager::getSingleton().createPlane(
+        "far",
+        Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
+        farPlane, 
+        20000, 20000, 20, 20, 
+        true, 
+        1, 5, 10, 
+        Ogre::Vector3::UNIT_Z);
+
+    mFar = new GameObject(mSceneMgr, mRootNode, "Far");
+    mFar->setEntityObject(
+            new EntityObject(mSceneMgr, "cube.mesh", "Examples/Black", false));
+    mFar->setScale(1000, 1, 1000);
+    mFar->setPosition(0, -25000, 0);
+
+    // floor
     Ogre::Plane plane(Ogre::Vector3::UNIT_Y, 0);
     Ogre::MeshPtr planePtr = Ogre::MeshManager::getSingleton().createPlane(
         "floor",
@@ -306,7 +324,7 @@ void Game::createScene(void) {
     mFloor = new GameObject(mSceneMgr, mRootNode, "Floor");
     mFloor->setEntityObject(
             new EntityObject(mSceneMgr, "floor", "Examples/Rockwall", false));
-    mFloor->setPosition(0, -175000, 0);
+    mFloor->setPosition(0, -165000, 0);
 
     PhysicsObject* floorPhysics = new PhysicsObject(mPhysics);
     floorPhysics->setShape(new btBoxShape(btVector3(10000, 30, 10000)));
@@ -315,40 +333,6 @@ void Game::createScene(void) {
     floorPhysics->addToSimulator(mFloor->getNode());
 
     mFloor->addPhysicsObject(floorPhysics);
-
-    // // paddle
-    // mPaddle = new Paddle(mSceneMgr, mRootNode, &eventQueue);
-    // mPaddle->setPosition(0, 0, -25);
-    // mPaddle->setScale(3, 3, 3);
-    // mPaddle->setRotation(90, 0, 0);
-
-    // PhysicsObject* paddlePhysics = new PhysicsObject(mPhysics);
-    // paddlePhysics->setShape(new btBoxShape(btVector3(8.0, 3.0, 15.0)));
-    // paddlePhysics->updateTransform(mPaddle->getPosition(), mPaddle->getOrientation());
-    // paddlePhysics->setKinematic();
-    // paddlePhysics->addToSimulator(mPaddle->getNode());
-
-    // mPaddle->addPhysicsObject(paddlePhysics);
-
-    // // paddle input variables
-    // dragSensitivity = .2;
-    // swingSensitivity = .12;
-    // rotSensitivity = .6;
-    // paddleBoundX = 130;
-    // paddleBoundY = 80;
-    // isSwinging = false;
-
-    // // table
-    // mTable = new Table(mSceneMgr, mRootNode, &eventQueue);
-    // mTable->setPosition(-65, -50, -320);
-    // mTable->setScale(5, 5, 5);
-
-    // PhysicsObject* tablePhysics = new PhysicsObject(mPhysics);
-    // tablePhysics->setShape(new btBoxShape(btVector3(76, 4.0, 136.0)));
-    // tablePhysics->updateTransform(Ogre::Vector3(2.5, -47.8, -190), mTable->getOrientation());
-    // tablePhysics->addToSimulator(mTable->getNode());
-
-    // mTable->addPhysicsObject(tablePhysics);
 
     points.push_back(Ogre::Vector3(1000.0f, -100000.0f, 0.0f ));
     points.push_back(Ogre::Vector3(1000.0f, 500.0f, 0.0f ));
@@ -376,11 +360,6 @@ void Game::createScene(void) {
     // camera
     mCamera->setPosition(Ogre::Vector3(0, 1000, 0));
     // mCamera->lookAt(Ogre::Vector3(0,0,-1));
-
-    // mCamera->setDirection(Ogre::Vector3::NEGATIVE_UNIT_Y);
-
-    // skybox
-    // mSceneMgr->setSkyBox(true, "Examples/SceneSkyBox1");
 }
 
 bool Game::setupSinglePlayer(const CEGUI::EventArgs &e){
@@ -390,9 +369,6 @@ bool Game::setupSinglePlayer(const CEGUI::EventArgs &e){
     HUD->setVisible(true);
     endMenu->setVisible(false);
     CEGUI::System::getSingleton().getDefaultGUIContext().getMouseCursor().hide();
-    // mBall->launch();
-    // mBall->reset();
-    // mBall->readd();
     mPlayer-> reinit();
 
     return true;
@@ -435,7 +411,7 @@ void Game::setScore(int s) {
 }
 
 bool Game::frameRenderingQueued(const Ogre::FrameEvent& evt) {
-    time = time + 1;
+    time += evt.timeSinceLastFrame;
     // if (serverIP == NULL && mNetMgr->scanForActivity()) {
     //     // is server and message received
     //     // printf("got a message, %d, %d, %d\n", mNetMgr->getClients(), mNetMgr->tcpServerData.updated, mNetMgr->tcpServerData.output[0]);
@@ -444,6 +420,11 @@ bool Game::frameRenderingQueued(const Ogre::FrameEvent& evt) {
     //     if (mNetMgr->tcpClientData[0]->output[0] == 1)
     //         mBall->reset();
     // }
+
+    Ogre::Vector3 newFarPos = mPlayer->getPosition();
+    newFarPos.y -= 25000;
+    mFar->setPosition(newFarPos);
+
 
     points.push_back(mPlayer->getPosition());
 
@@ -473,7 +454,7 @@ bool Game::frameRenderingQueued(const Ogre::FrameEvent& evt) {
     // }else{
     //     mPhysics->setDebug(1);
     // }
-    if(mSceneMgr->getAmbientLight().g <= 0 || mSceneMgr->getAmbientLight().g > 1){
+    if(mSceneMgr->getAmbientLight().g <= 0.5 || mSceneMgr->getAmbientLight().g > 1){
         flow = -flow;
     }
     mSceneMgr->setAmbientLight(Ogre::ColourValue(1, mSceneMgr->getAmbientLight().g-flow*0.001, 1));
@@ -491,11 +472,11 @@ bool Game::frameRenderingQueued(const Ogre::FrameEvent& evt) {
         mPhysics->setGravity(0.f);
         endMenu->setVisible(true);
         endMenu->getChild("Stats")->setText(
-            "  You Finished in:       " + std::to_string(time/60.0) + " seconds\n" +
+            "  You Finished in:       " + std::to_string(time) + " seconds\n" +
             "                 Score:       " + std::to_string(score) + "\n" + 
             "     Shield Bonus:       " + ((shield) ? "1000" : "0") + "\n" +
             "         Fuel Bonus:       " + std::to_string(meter) + "\n\n"+
-            "          Total:       " + std::to_string((time/60.0) + score + ((shield) ? 1000 : 0) + meter)
+            "          Total:       " + std::to_string(30000 - time * 100 + score + ((shield) ? 1000 : 0) + meter)
         );
         printf("b\n");
     }
@@ -511,6 +492,7 @@ bool Game::frameRenderingQueued(const Ogre::FrameEvent& evt) {
                 printf("a\n");
             }else{
                 shield = !shield;
+                mSound->playShatter(2);
                 mPlayer->setPosition(mRecentGround->getPosition());
                 mPlayer->getPhysicsObject()->updateTransform(mPlayer->getPosition(), mPlayer->getOrientation());
                 mPlayer->reinit();
@@ -525,26 +507,32 @@ bool Game::frameRenderingQueued(const Ogre::FrameEvent& evt) {
         // printf("checkig %s\n", a->getEntity()->getName().c_str());
         Ogre::Vector3 c = a->getPosition()-mPlayer->getPosition();
         if(!a->touched && abs(c.y) < 50 && abs(c.x) < 750 && abs(c.z) < 750){
-            printf("%s contain\n", a->getEntity()->getName().c_str());
+            // printf("%s contain\n", a->getEntity()->getName().c_str());
             a->touched = true;
             a->getEntity()->setMaterialName("Examples/TransparentTexture2");
-            score = score + 500;
-            mSound->playShatter(rand() % 4);
+            score = score + 100;
+            if((static_cast<float>(rand()) / RAND_MAX) < 0.5){
+                // mSound->playShatter(rand() % 3);
+            }
             break;
         }
     }
 
     for(GameObject* a : powers){
         Ogre::Vector3 c = a->getPosition()-mPlayer->getPosition();
-        if(!a->touched && abs(c.y) < 50 && abs(c.x) < 100 && abs(c.z) < 100){
-            printf("%s contain\n", a->getEntity()->getName().c_str());
+        if(!a->touched && abs(c.y) < 50 && abs(c.x) < 150 && abs(c.z) < 150){
+            printf("x %s contain\n", a->getNode()->getName().c_str());
             a->touched = true;
             a->getEntity()->setMaterialName("Examples/TransparentTexture2");
-            if(a->getEntity()->getName().find("boost")){
-                meter = meter + 300;
+            if(a->getNode()->getName().find("boost") != std::string::npos){
+                meter = meter + 200;
+                printf("%s\n", "found boost");
+                mSound->playFuel();
             }
-            if(a->getEntity()->getName().find("shield")){
+            if(a->getNode()->getName().find("shield") != std::string::npos){
                 shield = true;
+                printf("%s\n", "found shield");
+                mSound->playShield();
             }
             break;
         }
@@ -552,14 +540,17 @@ bool Game::frameRenderingQueued(const Ogre::FrameEvent& evt) {
 
     btVector3 relpos=mPlayerPhysics->getBody()->getCenterOfMassPosition();
     btVector3 wvel=mPlayerPhysics->getBody()->getVelocityInLocalPoint(relpos);
+    
+    btRigidBody* playerBody = mPlayerPhysics->getBody();
+    btVector3 vel = playerBody->getLinearVelocity();
+    btScalar y = vel.y();
 
     HUD->getChild("PlayerScore")->setText("Score: " + std::to_string(score) +
-        "\nFuel: " + std::to_string(meter) + "/" + std::to_string(maxMeter) +
-        "\nSpeed: " + std::to_string(sqrt(abs(wvel.y()))) + " m/s" +
+        "\nFuel: " + std::to_string((int)meter) + "/" + std::to_string((int)maxMeter) +
+        "\nSpeed: " + std::to_string(abs(y)/100.0) + " m/s" +
         "\nPower: " + ((shield) ? "shield" : "none")
         );
 
-    btRigidBody* playerBody = mPlayerPhysics->getBody();
 
     Ogre::Vector3 dir = mCamera->getDirection().normalisedCopy();
     dir.y = 0;
@@ -567,8 +558,7 @@ bool Game::frameRenderingQueued(const Ogre::FrameEvent& evt) {
 
     // std::cout << dir << std::endl;
 
-    btVector3 vel = playerBody->getLinearVelocity();
-    btScalar y = vel.y();
+
 
     if (movement & UP) {
         // mPlayer->setPosition(mPlayer->getPosition()+Ogre::Vector3(0,0,-2));
@@ -586,9 +576,9 @@ bool Game::frameRenderingQueued(const Ogre::FrameEvent& evt) {
         // mPlayer->setPosition(mPlayer->getPosition()+Ogre::Vector3(2,0,0));
         playerBody->applyCentralImpulse(btVector3(-dir.z, 0, dir.x));
     }
-    if (movement & BRAKE && wvel.y() < 0) {
+    if (movement & BRAKE && y < 0) {
         // mPlayer->setPosition(mPlayer->getPosition()+Ogre::Vector3(2,0,0));
-        mPlayerPhysics->getBody()->applyCentralImpulse(btVector3(0, abs(wvel.y())*0.00045, 0));
+        mPlayerPhysics->getBody()->applyCentralImpulse(btVector3(0, abs(y)*0.00045, 0));
     }
     if (movement & BOOST && meter > 0) {
 
@@ -598,8 +588,9 @@ bool Game::frameRenderingQueued(const Ogre::FrameEvent& evt) {
         meter = meter-(100/meter);
         if(meter < 0) meter = 0;
     }
-    if (sqrt(abs(wvel.y())) > 80){
-        mPlayerPhysics->getBody()->applyCentralImpulse(btVector3(0, abs(wvel.y())*0.00045, 0));
+    if (y < 0 && sqrt(abs(y)) > 80){
+        printf("stop right there criminal scum %.2f\n", y);
+        mPlayerPhysics->getBody()->applyCentralImpulse(btVector3(0, abs(y)*0.00045, 0));
     }
 
     mCamera->setPosition(mPlayer->getPosition() + Ogre::Vector3(0,-12,0));
@@ -612,67 +603,6 @@ bool Game::frameRenderingQueued(const Ogre::FrameEvent& evt) {
 
 void Game::simulate(const Ogre::FrameEvent& evt){
         mPhysics->stepSimulation(evt.timeSinceLastFrame, 1, 1/60.0f);
-
-        // if the ball touches the ground
-        // ball collide flag triggers
-        // mPhysics->checkCollide(mGround->getPhysicsObject(), mBall->getPhysicsObject());
-        // if (mBall->update()) {
-        //     //send to client that ball fell so they can set is ball launched to false
-        //     if(isSinglePlayer){
-        //         mBall->reset();
-        //         mBall->readd();
-        //     }
-        //     if(isServer && isBallLaunched){
-        //         mPhysics->setGravity(0);
-        //         mBall->still();
-        //         mBall->reset();
-        //         isBallLaunched = false;
-        //         char data[128] = "300";
-        //         mNetMgr->messageClient(PROTOCOL_TCP, 0, data, strlen(data));
-        //         printf("%s\n", "sending 300");
-        //     }
-        // }
-
-        // int score = getScore();
-        // if (mBall->update()) {
-        //     // score = 0;
-        //     if (mSound->getSound()){
-        //         mSound->playTableCollide();
-        //     }
-        // }
-
-        // mPhysics->checkCollide(mBall->getPhysicsObject(), mTable->getPhysicsObject());
-        // if (mTable->update() && mSound->getSound()) {
-        //    cscore++;
-        // }
-
-        // if (mTable->score > 0 && mSound->getSound()) {
-        //     mSound->playTableCollide();
-        // }
-
-        // mPhysics->checkCollide(mBall->getPhysicsObject(), mPaddle->getPhysicsObject());
-        // if (mPaddle->update() && mSound->getSound()) {
-        //     score++;
-        //     mSound->playPaddleSwing();
-        // }
-        // // setScore(score + mTable->score);
-        // if(mPaddle->getPosition().x > paddleBoundX) {
-        //     mPaddle->setPosition(paddleBoundX, mPaddle->getPosition().y, mPaddle->getPosition().z);
-        // }
-        // if(mPaddle->getPosition().x < -paddleBoundX) {
-        //     mPaddle->setPosition(-paddleBoundX, mPaddle->getPosition().y, mPaddle->getPosition().z);
-        // }
-        // if(mPaddle->getPosition().y > paddleBoundY+20) {
-        //     mPaddle->setPosition(mPaddle->getPosition().x, paddleBoundY+20, mPaddle->getPosition().z);
-        // }
-        // if(mPaddle->getPosition().y < -paddleBoundY+20) {
-        //     mPaddle->setPosition(mPaddle->getPosition().x, -paddleBoundY+20, mPaddle->getPosition().z);
-        // }
-
-        // Ogre::Vector3 camPos = mCamera->getPosition();
-        // Ogre::Vector3 padPos = mPaddle->getPosition();
-        // if(!isSwinging)
-        //     mCamera->setPosition(padPos.x, padPos.y + 12, camPos.z);
 }
 //---------------------------------------------------------------------------
 CEGUI::MouseButton convertButton(OIS::MouseButtonID buttonID)
@@ -724,14 +654,16 @@ bool Game::mouseMoved(const OIS::MouseEvent &arg)
     //     }
 
     // }
-
+    static Ogre::Vector3 last;
     if (isGameRunning) {
         float sensitivity = 0.001;
         mCamera->pitch(Ogre::Radian(arg.state.Y.rel * -sensitivity));
-        if (mCamera->getDirection().y < -0.999) {
+        Ogre::Vector3 dir = mCamera->getDirection();
+        if (mCamera->getDirection().y < -0.999 || dir.dotProduct(last) < 0) {
             // printf ("hoi\n");
             mCamera->pitch(Ogre::Radian(arg.state.Y.rel * sensitivity));
         }
+        last = dir;
 
         mCamera->yaw(Ogre::Radian(arg.state.X.rel * -sensitivity));
     }

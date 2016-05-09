@@ -12,6 +12,8 @@ public:
     void mute();
     bool getSound();
     void playShatter(int x);
+    void playFuel();
+    void playShield();
 
     bool              sound;
 
