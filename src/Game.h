@@ -45,7 +45,8 @@ enum DIRECTION {
     LEFT = 1 << 1,
     DOWN = 1 << 2,
     RIGHT = 1 << 3,
-    BRAKE = 1 << 4
+    BRAKE = 1 << 4,
+    BOOST = 1 << 5,
 };
 
 class Game : public BaseApplication {
@@ -59,6 +60,7 @@ public:
 
     void setupGUI();
     void simulate(const Ogre::FrameEvent& evt);
+    void ring(int i, int r, float x, float y);
 
 protected:
     virtual void createScene(void);
@@ -76,12 +78,16 @@ protected:
     Ogre::SceneNode*    mRootNode;
     Physics*            mPhysics;
 
-    GameObject*         mGround;
+    GameObject*         mRecentGround;
+    GameObject*         mFloor;
+
     // Paddle*             mPaddle;
     // Table*              mTable;
     Player*                mPlayer;
     PhysicsObject*         mPlayerPhysics;
     std::vector<GameObject*> boxes;
+    std::vector<GameObject*> glass;
+    std::vector<GameObject*> powers;
 
     Sound*              mSound;
     NetManager*         mNetMgr;
@@ -90,11 +96,14 @@ protected:
     CEGUI::Window* mRootWindow;
     CEGUI::Window* mainMenu;
     CEGUI::Window* HUD;
+    CEGUI::Window* endMenu;
+    float meter;
+    float maxMeter;
 
     int movement = 0;
     float flow = -1;
     // float               dragSensitivity;
-    // float               swingSensitivity;
+    float               turnSensitivity;
     // float               rotSensitivity;
     // float               paddleBoundX;
     // float               paddleBoundY;
@@ -104,7 +113,9 @@ protected:
     bool                isGameRunning;
     // bool                isBallLaunched;
     // bool                networkStarted;
-    // int                 score;
+    int                 score;
+    bool                shield;
+    float               time;
     // int                 cscore;
 
     // Ogre::Vector3       oldpos;

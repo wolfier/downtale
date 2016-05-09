@@ -11,16 +11,9 @@ public:
     virtual ~Sound();
     void mute();
     bool getSound();
-    void playGroundCollide();
-    void playTableCollide();
-    void playPaddleCollide();
-    void playPaddleSwing();
+    void playShatter(int x);
 
     bool              sound;
-    Mix_Chunk*        wosh;
-    Mix_Chunk*        ping;
-    Mix_Chunk*        pong;
-    Mix_Chunk*        ding;
 
 };
 

@@ -1,4 +1,4 @@
-material Examples/SphereMappedRustySteel
+material Examples/Boost
 {
 	technique
 	{
@@ -19,6 +19,67 @@ material Examples/SphereMappedRustySteel
 		}
 	}
 }
+
+
+material Examples/Shield
+{
+	technique
+	{
+		pass
+		{
+			texture_unit
+			{
+				texture BeachStones.jpg
+			}
+
+			texture_unit
+			{
+				texture droplet.png
+				colour_op_ex add src_texture src_current
+				colour_op_multipass_fallback one one
+				env_map spherical
+			}
+		}
+	}
+}
+
+material Examples/TransparentTexture
+ {
+   technique
+   {
+     pass
+     {
+       lighting off
+       scene_blend alpha_blend
+       depth_write off
+ 
+       texture_unit
+       {
+         texture RustySteel.jpg
+         alpha_op_ex source1 src_manual src_texture 0.2      
+       }
+     }
+   }
+ }
+
+ material Examples/TransparentTexture2
+ {
+   technique
+   {
+     pass
+     {
+       lighting off
+       scene_blend alpha_blend
+       depth_write off
+ 
+       texture_unit
+       {
+         texture BeachStones.jpg
+         alpha_op_ex source1 src_manual src_texture 0.05      
+       }
+     }
+   }
+ }
 
 material Examples/OgreLogo
 {

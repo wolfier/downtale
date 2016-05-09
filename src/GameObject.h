@@ -21,6 +21,7 @@ public:
     Ogre::Vector3 getPosition();
     Ogre::Vector3 getLocalPosition();
     Ogre::Quaternion getOrientation();
+    Ogre::Entity* getEntity();
     void setPosition(float x, float y, float z);
     void setPosition(Ogre::Vector3 v);
     void setScale(float x, float y, float z);
@@ -33,6 +34,7 @@ public:
     PhysicsObject* getPhysicsObject();
     void addPhysicsObject(PhysicsObject* phy);
     void setEntityObject(EntityObject* ent);
+    bool touched;
 
 protected:
     Ogre::String name;

@@ -7,6 +7,7 @@ GameObject::GameObject(Ogre::SceneManager* mgr, Ogre::SceneNode* parentnode, Ogr
     sceneMgr = mgr;
     sceneNode = parentnode->createChildSceneNode(name);
     setPosition(0, 0, 0);
+    touched = false;
 }
 
 GameObject::~GameObject() {
@@ -23,6 +24,10 @@ void GameObject::setEntityObject(EntityObject* ent) {
     if (entityObj) delete entityObj;
     entityObj = ent;
     sceneNode->attachObject(entityObj->getEntity());
+}
+
+Ogre::Entity* GameObject::getEntity() {
+    return entityObj->getEntity();
 }
 
 bool GameObject::getCollideFlag(){ return false; }

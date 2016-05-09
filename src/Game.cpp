@@ -15,9 +15,10 @@ http://www.ogre3d.org/wiki/
 -----------------------------------------------------------------------------
 */
 
-/*
-    Disclaimer: When the game is unrepsonsive press space to reset
-*/
+// Reference:
+// http://www.ogre3d.org/tikiwiki/DynamicLineDrawing&structure=Cookbook#Example
+// http://bulletphysics.org/Bullet/BulletFull/btRigidBody_8h_source.html
+
 
 #include <iostream>
 #include <OgreStringConverter.h>
@@ -26,23 +27,16 @@ http://www.ogre3d.org/wiki/
 #include "GameObject.h"
 #include "Sound.h"
 
-struct Position {
-    Ogre::Real bx;
-    Ogre::Real by;
-    Ogre::Real bz;
-    Ogre::Real px;
-    Ogre::Real py;
-    Ogre::Real pz;
-    Ogre::Real score;
-};
-
 Game::Game(void) : serverIP(NULL) {
     isGameRunning = false;
     // isServer = false;
     isSinglePlayer = true;
     // isBallLaunched = false;
-    // score = 0;
+    score = 0;
     // cscore = 0;
+    meter = 1000.0;
+    maxMeter = 1000.0;
+    shield = false;
 }
 
 Game::~Game(void) {
@@ -70,6 +64,7 @@ void Game::setupGUI(){
 
     mainMenu = mRootWindow->getChild("mainMenu");
     HUD = mRootWindow->getChild("HUD");
+    endMenu = mRootWindow->getChild("endMenu");
 
     mainMenu->getChild("singlePlayerButton")->subscribeEvent(
         CEGUI::PushButton::EventClicked,
@@ -78,14 +73,125 @@ void Game::setupGUI(){
             this
         )
     );
-    mainMenu->getChild("multiplayerButton")->subscribeEvent(
-        CEGUI::PushButton::EventClicked,
-        CEGUI::Event::Subscriber(
-            &Game::setupMultiplayer,
-            this
-        )
-    );
+    // mainMenu->getChild("multiplayerButton")->subscribeEvent(
+    //     CEGUI::PushButton::EventClicked,
+    //     CEGUI::Event::Subscriber(
+    //         &Game::setupMultiplayer,
+    //         this
+    //     )
+    // );
 
+}
+
+void Game::ring(int i, int r, float x, float y){
+
+    // GameObject* box = new GameObject(mSceneMgr, mRootNode, "1-Ring" + std::to_string(i));
+    // box->setPosition(x, i, y);
+
+    // PhysicsObject* boxPhysics = new PhysicsObject(mPhysics);
+    // boxPhysics->setShape(new btSphereShape(100));
+    // boxPhysics->updateTransform(box->getPosition(), box->getOrientation());
+    // boxPhysics->setMass(0);
+    // boxPhysics->addToSimulator(box->getNode());
+
+    // box->addPhysicsObject(boxPhysics);
+    // boxes.push_back(box);
+
+    if((static_cast<float>(rand()) / RAND_MAX) < 0.05){
+        if((static_cast<float>(rand()) / RAND_MAX) < 0.8){
+            GameObject* mPowerup = new GameObject(mSceneMgr, mRootNode, "boost"+std::to_string(i));
+            mPowerup->setEntityObject(new EntityObject(mSceneMgr, "sphere.mesh", "Examples/Boost", false));
+            mPowerup->setPosition(x, i, y);
+            powers.push_back(mPowerup);
+        }else {
+            GameObject* mPowerup = new GameObject(mSceneMgr, mRootNode, "shield"+std::to_string(i));
+            mPowerup->setEntityObject(new EntityObject(mSceneMgr, "sphere.mesh", "Examples/Shield", false));
+            mPowerup->setPosition(x, i, y);
+            powers.push_back(mPowerup);
+        }
+    }
+
+    Ogre::Plane plane(Ogre::Vector3::UNIT_Y, 0);
+    Ogre::MeshPtr planePtr = Ogre::MeshManager::getSingleton().createPlane(
+        "ground"+std::to_string(i),
+        Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
+        plane, 
+        r, r, 20, 20, 
+        true, 
+        1, 5, 10, 
+        Ogre::Vector3::UNIT_Z);
+
+    GameObject* mGround = new GameObject(mSceneMgr, mRootNode, "Ground"+std::to_string(i));
+    mGround->setEntityObject(
+            new EntityObject(mSceneMgr, "ground"+std::to_string(i), "Examples/TransparentTexture", false));
+    mGround->setPosition(x, i, y);
+    glass.push_back(mGround);
+
+
+    // GameObject* c = new GameObject(mSceneMgr, mRootNode, "center" + std::to_string(i));
+    // c->setPosition(x, i, y);
+
+    float w = 500.0;
+    float l = 200.0;
+
+    // PhysicsObject* cPhysics = new PhysicsObject(mPhysics);
+    // cPhysics->setShape(new btBoxShape(btVector3(w, 30, l)));
+    // cPhysics->updateTransform(c->getPosition(), box->getOrientation());
+    // cPhysics->setMass(0);
+    // cPhysics->addToSimulator(c->getNode());
+
+    // box->addPhysicsObject(boxPhysics);
+
+    GameObject* box = new GameObject(mSceneMgr, mRootNode, "1-Ring" + std::to_string(i));
+    box->setPosition(x, i, y+r);
+
+    PhysicsObject* boxPhysics = new PhysicsObject(mPhysics);
+    boxPhysics->setShape(new btBoxShape(btVector3(w, 30, l)));
+    boxPhysics->updateTransform(box->getPosition(), box->getOrientation());
+    boxPhysics->setMass(0);
+    boxPhysics->addToSimulator(box->getNode());
+
+    box->addPhysicsObject(boxPhysics);
+    boxes.push_back(box);
+
+    GameObject* box1 = new GameObject(mSceneMgr, mRootNode, "2-Ring" + std::to_string(i));
+    box1->setPosition(x, i, y-r);
+
+    PhysicsObject* boxPhysics1 = new PhysicsObject(mPhysics);
+    boxPhysics1->setShape(new btBoxShape(btVector3(w, 30, l)));
+    boxPhysics1->updateTransform(box1->getPosition(), box1->getOrientation());
+    boxPhysics1->setMass(0);
+    boxPhysics1->addToSimulator(box1->getNode());
+
+    box1->addPhysicsObject(boxPhysics1);
+    boxes.push_back(box1);
+
+    w = 200.0;
+    l = 400.0;
+
+    GameObject* box2 = new GameObject(mSceneMgr, mRootNode, "3-Ring" + std::to_string(i));
+    box2->setPosition(x+r, i, y);
+
+    PhysicsObject* boxPhysics2 = new PhysicsObject(mPhysics);
+    boxPhysics2->setShape(new btBoxShape(btVector3(w, 30, l)));
+    boxPhysics2->updateTransform(box2->getPosition(), box2->getOrientation());
+    boxPhysics2->setMass(0);
+    boxPhysics2->addToSimulator(box2->getNode());
+
+    box2->addPhysicsObject(boxPhysics2);
+    boxes.push_back(box2);
+
+    GameObject* box3 = new GameObject(mSceneMgr, mRootNode, "4-Ring" + std::to_string(i));
+    box3->setPosition(x-r, i, y);
+
+    PhysicsObject* boxPhysics3 = new PhysicsObject(mPhysics);
+    boxPhysics3->setShape(new btBoxShape(btVector3(w, 30, l)));
+    boxPhysics3->updateTransform(box3->getPosition(), box3->getOrientation());
+    boxPhysics3->setMass(0);
+    boxPhysics3->addToSimulator(box3->getNode());
+
+    box3->addPhysicsObject(boxPhysics3);
+    boxes.push_back(box3);
 }
 
 // TODO: Create your scene here :)
@@ -114,6 +220,16 @@ void Game::createScene(void) {
 
     mPlayer->addPhysicsObject(mPlayerPhysics);
 
+    GameObject* startingPlatform = new GameObject(mSceneMgr, mRootNode, "startingPlatform");
+    startingPlatform->setPosition(0, 400, 0);
+
+    PhysicsObject* spPhysics = new PhysicsObject(mPhysics);
+    spPhysics->setShape(new btBoxShape(btVector3(100, 30, 100)));
+    spPhysics->updateTransform(startingPlatform->getPosition(), startingPlatform->getOrientation());
+    spPhysics->setMass(0);
+    spPhysics->addToSimulator(startingPlatform->getNode());
+
+    startingPlatform->addPhysicsObject(spPhysics);
 
     // // ground
     // Ogre::Plane plane(Ogre::Vector3::UNIT_Y, 0);
@@ -138,27 +254,67 @@ void Game::createScene(void) {
 
     // mGround->addPhysicsObject(groundPhysics);
 
-    for (int i = -50000; i < 0; i += 5) {
-        float r1, r2, w, l;
-        if ((r1 = static_cast<float>(rand()) / RAND_MAX) < 0.1) {
-            r1 = static_cast<float>(rand()) / RAND_MAX * 2000 - 1000;
-            r2 = static_cast<float>(rand()) / RAND_MAX * 2000 - 1000;
-            GameObject* box = new GameObject(mSceneMgr, mRootNode, "Box" + std::to_string(i));
-            box->setPosition(r1, i, r2);
+    // for (int i = -50000; i < 0; i += 5) {
+    //     float r1, r2, w, l;
+    //     if ((r1 = static_cast<float>(rand()) / RAND_MAX) < 0.1) {
+    //         r1 = static_cast<float>(rand()) / RAND_MAX * 20000 - 10000;
+    //         r2 = static_cast<float>(rand()) / RAND_MAX * 20000 - 10000;
+    //         GameObject* box = new GameObject(mSceneMgr, mRootNode, "Box" + std::to_string(i));
+    //         box->setPosition(r1, i, r2);
 
-            w = static_cast<float>(rand()) / RAND_MAX * 50 + 20;
-            l = static_cast<float>(rand()) / RAND_MAX * 50 + 20;
+    //         w = static_cast<float>(rand()) / RAND_MAX * 50 + 20;
+    //         l = static_cast<float>(rand()) / RAND_MAX * 50 + 20;
 
-            PhysicsObject* boxPhysics = new PhysicsObject(mPhysics);
-            boxPhysics->setShape(new btBoxShape(btVector3(w, 30, l)));
-            boxPhysics->updateTransform(box->getPosition(), box->getOrientation());
-            boxPhysics->setMass(0);
-            boxPhysics->addToSimulator(box->getNode());
+    //         PhysicsObject* boxPhysics = new PhysicsObject(mPhysics);
+    //         boxPhysics->setShape(new btBoxShape(btVector3(w, 30, l)));
+    //         boxPhysics->updateTransform(box->getPosition(), box->getOrientation());
+    //         boxPhysics->setMass(0);
+    //         boxPhysics->addToSimulator(box->getNode());
 
-            box->addPhysicsObject(boxPhysics);
-            boxes.push_back(box);
-        }
+    //         box->addPhysicsObject(boxPhysics);
+    //         boxes.push_back(box);
+    //     }
+    // }
+    float l1 = 0, l2 = -1000;
+    for (int i = -50000; i < -5000; i += 3000) {
+        l1 = l1 + static_cast<float>(rand()) / RAND_MAX * 300 - 150;
+        l2 = l2 + static_cast<float>(rand()) / RAND_MAX * 300 - 150;
+        ring(i, 750, l1, l2);
+        // printf("a %f %f\n", l1, l2);
     }
+    for (int i = -75000; i < -50000; i += 1000) {
+        ring(i, 750, l1, l2);
+        // printf("k %f %f\n", l1, l2);
+    }
+    for (int i = -150000; i < -75000; i += 2500) {
+        l1 = l1 + static_cast<float>(rand()) / RAND_MAX * 300 - 150;
+        l2 = l2 + static_cast<float>(rand()) / RAND_MAX * 300 - 150;
+        ring(i, 750, l1, l2);
+        // printf("b %f %f\n", l1, l2);
+    }
+
+    Ogre::Plane plane(Ogre::Vector3::UNIT_Y, 0);
+    Ogre::MeshPtr planePtr = Ogre::MeshManager::getSingleton().createPlane(
+        "floor",
+        Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
+        plane, 
+        20000, 20000, 20, 20, 
+        true, 
+        1, 5, 10, 
+        Ogre::Vector3::UNIT_Z);
+
+    mFloor = new GameObject(mSceneMgr, mRootNode, "Floor");
+    mFloor->setEntityObject(
+            new EntityObject(mSceneMgr, "floor", "Examples/Rockwall", false));
+    mFloor->setPosition(0, -175000, 0);
+
+    PhysicsObject* floorPhysics = new PhysicsObject(mPhysics);
+    floorPhysics->setShape(new btBoxShape(btVector3(10000, 30, 10000)));
+    floorPhysics->updateTransform(mFloor->getPosition(), mFloor->getOrientation());
+    floorPhysics->setMass(0);
+    floorPhysics->addToSimulator(mFloor->getNode());
+
+    mFloor->addPhysicsObject(floorPhysics);
 
     // // paddle
     // mPaddle = new Paddle(mSceneMgr, mRootNode, &eventQueue);
@@ -194,8 +350,10 @@ void Game::createScene(void) {
 
     // mTable->addPhysicsObject(tablePhysics);
 
+    points.push_back(Ogre::Vector3(1000.0f, -100000.0f, 0.0f ));
+    points.push_back(Ogre::Vector3(1000.0f, 500.0f, 0.0f ));
     points.push_back(Ogre::Vector3(0.0f, 500.0f, 0.0f ));
-    points.push_back(Ogre::Vector3(0.0f, -50000.0f, 0.0f ));
+
      
     lines = new CDynamicLineDrawer();
     for (int i=0; i<points.size(); i++) {
@@ -228,7 +386,8 @@ bool Game::setupSinglePlayer(const CEGUI::EventArgs &e){
     isSinglePlayer = true;
     isGameRunning = true;
     mainMenu->setVisible(false);
-    // HUD->setVisible(true);
+    HUD->setVisible(true);
+    endMenu->setVisible(false);
     CEGUI::System::getSingleton().getDefaultGUIContext().getMouseCursor().hide();
     // mBall->launch();
     // mBall->reset();
@@ -275,6 +434,7 @@ void Game::setScore(int s) {
 }
 
 bool Game::frameRenderingQueued(const Ogre::FrameEvent& evt) {
+    time = time + 1;
     // if (serverIP == NULL && mNetMgr->scanForActivity()) {
     //     // is server and message received
     //     // printf("got a message, %d, %d, %d\n", mNetMgr->getClients(), mNetMgr->tcpServerData.updated, mNetMgr->tcpServerData.output[0]);
@@ -317,133 +477,86 @@ bool Game::frameRenderingQueued(const Ogre::FrameEvent& evt) {
     }
     mSceneMgr->setAmbientLight(Ogre::ColourValue(1, mSceneMgr->getAmbientLight().g-flow*0.001, 1));
 
-        
     mKeyboard->capture();
     mMouse->capture();
 
     mPhysics->stepSimulation(evt.timeSinceLastFrame, 1, 1/60.0f);
 
-    // mPhysics->checkCollide(mGround->getPhysicsObject(), mBall->getPhysicsObject());
-    // int score = getScore();
-    // if (mBall->update()) {
-    //     score = 0;
-    //     if (mSound->getSound()){
-    //         mSound->playTableCollide();
+    mPhysics->checkCollide(mFloor->getPhysicsObject(), mPlayer->getPhysicsObject());
+    if (mPlayer->update()) {
+        mPlayer->setPosition(Ogre::Vector3(mPlayer->getPosition().x,-174000,mPlayer->getPosition().z));
+        mPlayer->getPhysicsObject()->updateTransform(mPlayer->getPosition(), mPlayer->getOrientation());
+        mPlayer->reinit();
+        mPhysics->setGravity(0.f);
+        endMenu->setVisible(true);
+        endMenu->getChild("Stats")->setText(
+            "  You Finished in:       " + std::to_string(time/60.0) + " seconds\n" +
+            "                 Score:       " + std::to_string(score) + "\n" + 
+            "     Shield Bonus:       " + ((shield) ? "1000" : "0") + "\n" +
+            "         Fuel Bonus:       " + std::to_string(meter) + "\n\n"+
+            "          Total:       " + std::to_string((time/60.0) + score + ((shield) ? 1000 : 0) + meter)
+        );
+        printf("b\n");
+    }
 
-    // if (isServer) {
-    //     // is server and message received
-    //     // printf("got a message, %d, %d, %d\n", mNetMgr->getClients(), mNetMgr->tcpServerData.updated, mNetMgr->tcpServerData.output[0]);
-    //     // printf("%d\n", mNetMgr->tcpClientData[0]->output[0]);
-    //     mNetMgr->tcpServerData.updated = false;
-    //     if (mNetMgr->tcpClientData[0]->output[0] == 1)
-    //         mBall->reset();
-    // }
+    for(GameObject* a : boxes){
+        mPhysics->checkCollide(a->getPhysicsObject(), mPlayer->getPhysicsObject());
+        if (mPlayer->update()) {
+            // mPlayer->setPosition(Ogre::Vector3(0,500,0));
+            if(!shield){
+                mPlayer->setPosition(Ogre::Vector3(0,500,0));
+                mPlayer->getPhysicsObject()->updateTransform(mPlayer->getPosition(), mPlayer->getOrientation());
+                mPlayer->reinit();
+                printf("a\n");
+            }else{
+                shield = !shield;
+                mPlayer->setPosition(mRecentGround->getPosition());
+                mPlayer->getPhysicsObject()->updateTransform(mPlayer->getPosition(), mPlayer->getOrientation());
+                mPlayer->reinit();
+                printf("s\n");
+            }
+            break;
+        }
+    }
 
-    // if(!isGameRunning && !isSinglePlayer){
-    //     if(isServer){
-    //         if(mNetMgr->scanForActivity()){
-    //             mNetMgr->tcpServerData.updated = false;
-    //             //code 100 = client joined
-    //             // printf("%d\n",strcmp(mNetMgr->tcpClientData[0]->output,"100"));
-    //             if(strcmp(mNetMgr->tcpClientData[0]->output,"100") == 0){
-    //                 isGameRunning = true;
-    //                 mainMenu->setVisible(false);
-    //                 HUD->setVisible(true);
-    //                 CEGUI::System::getSingleton().getDefaultGUIContext().getMouseCursor().hide();
-    //                 mNetMgr->denyConnections();
-    //             }
-    //         }
-    //     }
-    //     else{   //client
-    //         // const char data = 1;
-    //         // mNetMgr->messageServer(PROTOCOL_TCP, data, 1);
-    //         char data[128] = "100";
-    //         mNetMgr->messageServer(PROTOCOL_TCP, data, strlen(data));
+    for(GameObject* a : glass){
+        mRecentGround = a;
+        // printf("checkig %s\n", a->getEntity()->getName().c_str());
+        Ogre::Vector3 c = a->getPosition()-mPlayer->getPosition();
+        if(!a->touched && abs(c.y) < 50 && abs(c.x) < 750 && abs(c.z) < 750){
+            printf("%s contain\n", a->getEntity()->getName().c_str());
+            a->touched = true;
+            a->getEntity()->setMaterialName("Examples/TransparentTexture2");
+            score = score + 500;
+            mSound->playShatter(rand() % 4);
+            break;
+        }
+    }
 
-    //         isGameRunning = true;
-    //         mainMenu->setVisible(false);
-    //         HUD->setVisible(true);
-    //         CEGUI::System::getSingleton().getDefaultGUIContext().getMouseCursor().hide();
-    //     }
-    // }
-    // if(isGameRunning){
-    //     HUD->getChild("PlayerScore")->setText("Score: " + std::to_string(score));
-    //     if(isSinglePlayer){
-    //         simulate(evt);
-    //     }
-    //     else{   //multiplayer
-    //         if(isServer){
-    //             simulate(evt);
-    //             if(mNetMgr->scanForActivity()){
-    //                 mNetMgr->tcpServerData.updated = false;
-                    
-    //                 if( strcmp("200", mNetMgr->tcpClientData[0]->output) == 0){
-    //                     printf("%s\n", "launching");
-    //                     mPhysics->setGravity(-150.f);
-    //                     mBall->launch();
-    //                     mBall->reset();
-    //                     mBall->readd();
-    //                     isBallLaunched = true;
-    //                     // char data[128] = "400";
-    //                     // mNetMgr->messageClient(PROTOCOL_TCP, 0, data, strlen(data));
-    //                 }
-    //                 else{
-    //                     // printf("%s\n", "ball moving");
-    //                     struct Position *p = (struct Position *)mNetMgr->tcpClientData[0]->output;
-    //                     mBall->setPosition(p->bx, p->by, -400);
-    //                     mBall->updateTransform(mBall->getPosition(), mBall->getOrientation());
-    //                 }
-    //                 struct Position p;
-    //                 p.px = mPaddle->getPosition().x;
-    //                 p.py = mPaddle->getPosition().y;
-    //                 p.pz = mPaddle->getPosition().z;
+    for(GameObject* a : powers){
+        Ogre::Vector3 c = a->getPosition()-mPlayer->getPosition();
+        if(!a->touched && abs(c.y) < 50 && abs(c.x) < 100 && abs(c.z) < 100){
+            printf("%s contain\n", a->getEntity()->getName().c_str());
+            a->touched = true;
+            a->getEntity()->setMaterialName("Examples/TransparentTexture2");
+            if(a->getEntity()->getName().find("boost")){
+                meter = meter + 300;
+            }
+            if(a->getEntity()->getName().find("shield")){
+                shield = true;
+            }
+            break;
+        }
+    }
 
-    //                 mNetMgr->messageClient(PROTOCOL_TCP, 0, (char *)&p, sizeof(Position) & INT_MAX);
-    //             }
-    //             if(isBallLaunched){
-    //                 struct Position p;
-    //                 p.bx = mBall->getPosition().x;
-    //                 p.by = mBall->getPosition().y;
-    //                 p.bz = mBall->getPosition().z;
-    //                 p.px = mPaddle->getPosition().x;
-    //                 p.py = mPaddle->getPosition().y;
-    //                 p.pz = mPaddle->getPosition().z;
-    //                 p.score = cscore;
+    btVector3 relpos=mPlayerPhysics->getBody()->getCenterOfMassPosition();
+    btVector3 wvel=mPlayerPhysics->getBody()->getVelocityInLocalPoint(relpos);
 
-    //                 mNetMgr->messageClient(PROTOCOL_TCP, 0, (char *)&p, sizeof(Position) & INT_MAX);
-    //             }
-    //         }
-    //         else{   // client
-    //             if(mNetMgr->scanForActivity()){
-    //                 mNetMgr->tcpServerData.updated = false;
-    //                 if( strcmp("300", mNetMgr->tcpServerData.output) == 0){
-    //                     isBallLaunched = false;
-    //                     printf("%s\n", "got 300");
-    //                 }
-    //                 if(isBallLaunched){
-                       
-    //                         // struct Position p;
-    //                         // p.bx = mBall->getPosition().x;
-    //                         // p.by = mBall->getPosition().y+10;
-    //                         // p.bz = -400;
-                
-    //                         // mNetMgr->messageServer(PROTOCOL_TCP, (char *)&p, sizeof(Position) & INT_MAX);
-                   
-    //                     struct Position *p = (struct Position *)mNetMgr->tcpServerData.output;
-
-    //                     mBall->setPosition(p->bx, p->by, p->bz);
-    //                     mPaddle->setPosition(p->px, p->py, p->pz);
-    //                     score = p->score;
-                        
-    //                 }
-    //                 else{
-    //                     struct Position *p = (struct Position *)mNetMgr->tcpServerData.output;
-    //                         mPaddle->setPosition(p->px, p->py, p->pz);
-    //                 }
-    //             }
-    //         }
-    //     }
-    // }
+    HUD->getChild("PlayerScore")->setText("Score: " + std::to_string(score) +
+        "\nFuel: " + std::to_string(meter) + "/" + std::to_string(maxMeter) +
+        "\nSpeed: " + std::to_string(sqrt(abs(wvel.y()))) + " m/s" +
+        "\nPower: " + ((shield) ? "shield" : "none")
+        );
 
     if (movement & UP) {
         // mPlayer->setPosition(mPlayer->getPosition()+Ogre::Vector3(0,0,-2));
@@ -461,8 +574,20 @@ bool Game::frameRenderingQueued(const Ogre::FrameEvent& evt) {
         // mPlayer->setPosition(mPlayer->getPosition()+Ogre::Vector3(2,0,0));
         mPlayerPhysics->getBody()->applyCentralImpulse(btVector3(0.5, 0, 0));
     }
-    if (movement & BRAKE && mPlayerPhysics->getBody()->getLinearVelocity().y() < -5) {
-        mPlayerPhysics->getBody()->applyCentralImpulse(btVector3(0, 0.5, 0));
+    if (movement & BRAKE && wvel.y() < 0) {
+        // mPlayer->setPosition(mPlayer->getPosition()+Ogre::Vector3(2,0,0));
+        mPlayerPhysics->getBody()->applyCentralImpulse(btVector3(0, abs(wvel.y())*0.00045, 0));
+    }
+    if (movement & BOOST && meter > 0) {
+
+        // printf("a %f %f %f | %f\n", wvel.x(), wvel.y(), wvel.z(), meter);
+
+        mPlayerPhysics->getBody()->applyCentralImpulse(btVector3(0, -2.0, 0));
+        meter = meter-(100/meter);
+        if(meter < 0) meter = 0;
+    }
+    if (sqrt(abs(wvel.y())) > 80){
+        mPlayerPhysics->getBody()->applyCentralImpulse(btVector3(0, abs(wvel.y())*0.00045, 0));
     }
 
     mCamera->setPosition(mPlayer->getPosition() + Ogre::Vector3(0,-12,0));
@@ -662,12 +787,11 @@ bool Game::keyReleased(const OIS::KeyEvent &arg){
         case OIS::KC_D:
             movement ^= RIGHT;
             break;
-        case OIS::KC_SPACE:
+        case OIS::KC_LSHIFT:
             movement ^= BRAKE;
             break;
-        case OIS::KC_G:
-            // mCamera->setDirection(Ogre::Vector3::NEGATIVE_UNIT_Y);
-            // mCamera->lookAt(0,0,-1);
+        case OIS::KC_SPACE:
+            movement ^= BOOST;
             break;
         default: break;
     }
@@ -703,17 +827,22 @@ bool Game::keyPressed(const OIS::KeyEvent &arg){
         case OIS::KC_D:
             movement ^= RIGHT;
             break;
-        case OIS::KC_SPACE:
+        case OIS::KC_LSHIFT:
             movement ^= BRAKE;
             break;
-        case OIS::KC_G:
-            // mCamera->roll(Ogre::Radian(180));
-            // mCamera->lookAt(0,0,-1);
+        case OIS::KC_SPACE:
+            movement ^= BOOST;
             break;
         case OIS::KC_K:
             mPlayer->setPosition(Ogre::Vector3(0,500,0));
+            mPlayer->getPhysicsObject()->updateTransform(mPlayer->getPosition(), mPlayer->getOrientation());
+            mPhysics->setGravity(-25.0);
             mPlayer->reinit();
-            // mCamera->lookAt(0,0,-1);
+            endMenu->setVisible(false);
+            score = 0;
+            shield = false;
+            meter = 1000;
+            time = 0;
             break;
         default: break;
     }
