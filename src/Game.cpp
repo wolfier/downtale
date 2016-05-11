@@ -37,6 +37,7 @@ Game::Game(void) : serverIP(NULL) {
     meter = 1000.0;
     maxMeter = 1000.0;
     shield = false;
+    restart = false;
 }
 
 Game::~Game(void) {
@@ -45,7 +46,7 @@ Game::~Game(void) {
     // if (mTable) delete mTable;
     // if (mSound) delete mSound;
     // if (mGui) delete mGui;
-    if(mNetMgr) delete mNetMgr;
+    // if(mNetMgr) delete mNetMgr;
 }
 
 void Game::setupGUI(){
@@ -115,10 +116,10 @@ void Game::ring(int i, int r, float x, float y){
     Ogre::MeshPtr planePtr = Ogre::MeshManager::getSingleton().createPlane(
         "ground"+std::to_string(i),
         Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
-        plane, 
-        r, r, 20, 20, 
-        true, 
-        1, 5, 10, 
+        plane,
+        r, r, 20, 20,
+        true,
+        1, 5, 10,
         Ogre::Vector3::UNIT_Z);
 
     GameObject* mGround = new GameObject(mSceneMgr, mRootNode, "Ground"+std::to_string(i));
@@ -197,7 +198,7 @@ void Game::ring(int i, int r, float x, float y){
 // TODO: Create your scene here :)
 void Game::createScene(void) {
     mSound = new Sound(true);
-    setupGUI();
+    if (!restart) setupGUI();
     // mGUI->setupSinglePlayerButton(&Game::setupSinglePlayer, this);
 
     Ogre::MaterialManager::getSingleton().setDefaultTextureFiltering(Ogre::TFO_ANISOTROPIC);
@@ -220,7 +221,7 @@ void Game::createScene(void) {
 
     mPlayer->addPhysicsObject(mPlayerPhysics);
 
-    GameObject* startingPlatform = new GameObject(mSceneMgr, mRootNode, "startingPlatform");
+    startingPlatform = new GameObject(mSceneMgr, mRootNode, "startingPlatform");
     startingPlatform->setPosition(0, 400, 0);
 
     PhysicsObject* spPhysics = new PhysicsObject(mPhysics);
@@ -298,10 +299,10 @@ void Game::createScene(void) {
     Ogre::MeshPtr farPlanePtr = Ogre::MeshManager::getSingleton().createPlane(
         "far",
         Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
-        farPlane, 
-        20000, 20000, 20, 20, 
-        true, 
-        1, 5, 10, 
+        farPlane,
+        20000, 20000, 20, 20,
+        true,
+        1, 5, 10,
         Ogre::Vector3::UNIT_Z);
 
     mFar = new GameObject(mSceneMgr, mRootNode, "Far");
@@ -315,10 +316,10 @@ void Game::createScene(void) {
     Ogre::MeshPtr planePtr = Ogre::MeshManager::getSingleton().createPlane(
         "floor",
         Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
-        plane, 
-        20000, 20000, 20, 20, 
-        true, 
-        1, 5, 10, 
+        plane,
+        20000, 20000, 20, 20,
+        true,
+        1, 5, 10,
         Ogre::Vector3::UNIT_Z);
 
     mFloor = new GameObject(mSceneMgr, mRootNode, "Floor");
@@ -348,14 +349,16 @@ void Game::createScene(void) {
     linesNode->attachObject(lines);
 
     // lights
-    mSceneMgr->setAmbientLight(Ogre::ColourValue(1, 1, 1));
-    mSceneMgr->setShadowTechnique(Ogre::SHADOWTYPE_STENCIL_ADDITIVE);
-    Ogre::Light* light = mSceneMgr->createLight("MainLight");
-    light->setType(Ogre::Light::LT_DIRECTIONAL);
-    light->setDirection(0, -1, 0);
-    light->setDiffuseColour(Ogre::ColourValue::White);
-    light->setSpecularColour(Ogre::ColourValue::White);
-    light->setPosition(0, 200, 0);
+    if (!restart) {
+        mSceneMgr->setAmbientLight(Ogre::ColourValue(1, 1, 1));
+        mSceneMgr->setShadowTechnique(Ogre::SHADOWTYPE_STENCIL_ADDITIVE);
+        Ogre::Light* light = mSceneMgr->createLight("MainLight");
+        light->setType(Ogre::Light::LT_DIRECTIONAL);
+        light->setDirection(0, -1, 0);
+        light->setDiffuseColour(Ogre::ColourValue::White);
+        light->setSpecularColour(Ogre::ColourValue::White);
+        light->setPosition(0, 200, 0);
+    }
 
     // camera
     mCamera->setPosition(Ogre::Vector3(0, 1000, 0));
@@ -466,6 +469,7 @@ bool Game::frameRenderingQueued(const Ogre::FrameEvent& evt) {
 
     mPhysics->checkCollide(mFloor->getPhysicsObject(), mPlayer->getPhysicsObject());
     if (mPlayer->update()) {
+        restart = true;
         mPlayer->setPosition(Ogre::Vector3(mPlayer->getPosition().x,-174000,mPlayer->getPosition().z));
         mPlayer->getPhysicsObject()->updateTransform(mPlayer->getPosition(), mPlayer->getOrientation());
         mPlayer->reinit();
@@ -473,7 +477,7 @@ bool Game::frameRenderingQueued(const Ogre::FrameEvent& evt) {
         endMenu->setVisible(true);
         endMenu->getChild("Stats")->setText(
             "  You Finished in:       " + std::to_string(time) + " seconds\n" +
-            "                 Score:       " + std::to_string(score) + "\n" + 
+            "                 Score:       " + std::to_string(score) + "\n" +
             "     Shield Bonus:       " + ((shield) ? "1000" : "0") + "\n" +
             "         Fuel Bonus:       " + std::to_string(meter) + "\n\n"+
             "          Total:       " + std::to_string(30000 - time * 100 + score + ((shield) ? 1000 : 0) + meter)
@@ -540,7 +544,7 @@ bool Game::frameRenderingQueued(const Ogre::FrameEvent& evt) {
 
     btVector3 relpos=mPlayerPhysics->getBody()->getCenterOfMassPosition();
     btVector3 wvel=mPlayerPhysics->getBody()->getVelocityInLocalPoint(relpos);
-    
+
     btRigidBody* playerBody = mPlayerPhysics->getBody();
     btVector3 vel = playerBody->getLinearVelocity();
     btScalar y = vel.y();
@@ -589,7 +593,7 @@ bool Game::frameRenderingQueued(const Ogre::FrameEvent& evt) {
         if(meter < 0) meter = 0;
     }
     if (y < 0 && sqrt(abs(y)) > 80){
-        printf("stop right there criminal scum %.2f\n", y);
+        // printf("stop right there criminal scum %.2f\n", y);
         mPlayerPhysics->getBody()->applyCentralImpulse(btVector3(0, abs(y)*0.00045, 0));
     }
 
@@ -799,6 +803,9 @@ bool Game::keyPressed(const OIS::KeyEvent &arg){
             shield = false;
             meter = 1000;
             time = 0;
+            if (restart) {
+                reset();
+            }
             break;
         default: break;
     }
@@ -816,6 +823,36 @@ bool Game::keyPressed(const OIS::KeyEvent &arg){
     // }
 
     return BaseApplication::keyPressed(arg);
+}
+
+void Game::reset() {
+
+    std::vector<GameObject*>::iterator i;
+    for (i = powers.begin(); i != powers.end(); i++) {
+        delete *i;
+    }
+    powers.clear();
+
+    for (i = glass.begin(); i != glass.end(); i++) {
+        delete *i;
+    }
+    glass.clear();
+
+    for (i = boxes.begin(); i != boxes.end(); i++) {
+        delete *i;
+    }
+    boxes.clear();
+
+    delete mSound;
+    delete mPhysics;
+    delete mPlayer;
+    delete mFar;
+    delete mFloor;
+    delete lines;
+
+    mRootNode->removeAndDestroyAllChildren();
+
+    createScene();
 }
 
 //---------------------------------------------------------------------------

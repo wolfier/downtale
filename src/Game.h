@@ -74,10 +74,12 @@ protected:
     virtual bool mousePressed(const OIS::MouseEvent &arg, OIS::MouseButtonID id);
     virtual bool keyPressed(const OIS::KeyEvent &arg);
     virtual bool keyReleased(const OIS::KeyEvent &arg);
+    void reset();
 
     Ogre::SceneNode*    mRootNode;
     Physics*            mPhysics;
 
+    GameObject*         startingPlatform;
     GameObject*         mRecentGround;
     GameObject*         mFar;
     GameObject*         mFloor;
@@ -112,6 +114,7 @@ protected:
     // bool                isServer;
     bool                isSinglePlayer;
     bool                isGameRunning;
+    bool                restart;
     // bool                isBallLaunched;
     // bool                networkStarted;
     int                 score;
